@@ -79,6 +79,16 @@ class Memcached {
 	
 	const OPT_RANDOMIZE_REPLICA_READS;
 
+	const OPT_CLIENT_MODE;
+
+	const OPT_DYNAMIC_POLLING_INTERVAL_SECS;
+
+        /**
+         * Client mode parameters
+         */
+	const STATIC_CLIENT_MODE;
+
+	const DYNAMIC_CLIENT_MODE;
 
 	/**
 	 * Class parameters
@@ -186,6 +196,7 @@ class Memcached {
 
 	const RES_CONNECTION_SOCKET_CREATE_FAILURE;
 
+	const RES_MEMCACHED_NO_CONFIG_SERVER;
 
 	public function __construct( $persistent_id = '', $on_new_object_cb = null ) {}
 	
