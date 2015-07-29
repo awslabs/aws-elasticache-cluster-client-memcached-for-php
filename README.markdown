@@ -17,7 +17,7 @@ make
 make install
 
 
-Resources
+# Resources
 ---------
  * [Github link] ()https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php)
  * [AmazonElastiCache Auto Discovery](http://docs.amazonwebservices.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html)
