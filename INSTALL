@@ -1,0 +1,10 @@
+To compile this package to generate the PHP memcached extension, do the following set of steps:
+
+1) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
+
+2) Run the following set of commands under the current directory:
+
+phpize
+./configure --with-libmemcached-dir=<path to libmemcached build directory>
+make
+make install
