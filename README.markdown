@@ -1,6 +1,6 @@
 # Amazon ElastiCache Cluster Client
 
-Amazon ElastiCache Cluster Client is used to connect to ElastiCache clusters. This extension uses Amazon ElastiCache fork of libmemcached library to provide API for communicating with ElastiCache servers. Our changes are based on open-source memcached extension v.2.1.0 from https://github.com/php-memcached-dev/php-memcached. 
+Amazon ElastiCache Cluster Client is used to connect to ElastiCache for Memcached clusters. This extension uses Amazon ElastiCache fork of libmemcached library to provide API for communicating with ElastiCache servers. Our changes are based on open-source memcached extension v.2.1.0 from https://github.com/php-memcached-dev/php-memcached. 
 This client library is released under the [Apache 2.0 License](http://aws.amazon.com/apache-2-0/).
 
 # Building
