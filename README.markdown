@@ -13,7 +13,7 @@ To compile this package to generate the PHP Memcached extension, do the followin
 
 > phpize
 
-> ./configure --with-libmemcached-dir=&lt;<path to libmemcached build directory&gt;
+> ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt;
 
 > make
 
