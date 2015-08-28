@@ -5,7 +5,11 @@ This client library is released under the [Apache 2.0 License](http://aws.amazon
 
 # Building
 
-To compile this package to generate the PHP Memcached extension, do the following set of steps:
+To compile this package to generate the PHP Memcached extension, do the following set of steps (verified on Amazon Linux 201503 AMI):
+
+0) Install the required dependencies. 
+
+> sudo yum install php php-devel zlib-devel
 
 1) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
 
@@ -14,6 +18,10 @@ To compile this package to generate the PHP Memcached extension, do the followin
 > phpize
 
 > ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt;
+
+Note: you can statically link the libmemcached library into the PHP binary so it can be ported across various Linux platforms. To do that, run the following command, otherwise proceed to "make" 
+
+> sed -i "s#-lmemcached#\<libmemcached build directory\>\/lib\/libmemcached.a -lcrypt -lpthread -lm -lstdc++ -lsasl2#" Makefile
 
 > make
 
