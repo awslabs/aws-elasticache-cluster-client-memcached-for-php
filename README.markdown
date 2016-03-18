@@ -18,10 +18,6 @@ To compile this package to generate the PHP Memcached extension, do the followin
 
 > ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
 
-Note: you can statically link the libmemcached library into the PHP binary so it can be ported across various Linux platforms. To do that, run the following command, otherwise proceed to "make" 
-
-> sed -i "s#-lmemcached#\<libmemcached build directory\>\/lib\/libmemcached.a -lcrypt -lpthread -lm -lstdc++ -lsasl2#" Makefile
-
 > make
 
 > make install
