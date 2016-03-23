@@ -8,61 +8,61 @@ This client library is released under the [Apache 2.0 License](http://aws.amazon
 
 --- Ubuntu 14.04 AMI ---
 
-0. Launch a new instance from the AMI
+a) Launch a new instance from the AMI
 
-1. Run the following commands
+b) Run the following commands
 
 > sudo apt-get update
 
 > sudo apt-get install gcc g++
 
-2. Install PHP 7.0
+c) Install PHP 7.0
 
-3. Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
 
-4. With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib/php/20151012
+e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib/php/20151012
 
-5. Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php/7.0/cli/php.ini
+f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php/7.0/cli/php.ini
 
 --- Amazon Linux 201509 AMI/Red Hat 7 AMI ---
 
-0. Launch a new instance from the AMI
+a) Launch a new instance from the AMI
 
-1. Run the following command
+b) Run the following command
 
 > sudo yum install gcc-c++
 
-2. Install PHP 7.0
+c) Install PHP 7.0
 
-3. Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
 
-4. With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php/modules/
+e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php/modules/
 
-5. Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php.ini
+f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php.ini
 
 --- SUSE Linux AMI ---
 
-0. Launch a new instance from the AMI
+a) Launch a new instance from the AMI
 
-1. Run the following command
+b) Run the following command
 
 > sudo zypper install gcc
 
-2. Install PHP 7.0
+c) Install PHP 7.0
 
-3. Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.0/latest-64bit
 
-4. With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php7/extensions/
+e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php7/extensions/
 
-5. Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php7/cli/php.ini
+f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php7/cli/php.ini
 
 # To compile the client from source, do the following set of steps:
 
-0) Launch a Linux-based EC2 instance and install PHP 7 along with its required dependencies. 
+a) Launch a Linux-based EC2 instance and install PHP 7 along with its required dependencies. 
 
-1) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
+b) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
 
-2) Run the following set of commands under the current directory:
+c) Run the following set of commands under the current directory:
 
 > phpize
 
