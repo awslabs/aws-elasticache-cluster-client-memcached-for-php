@@ -9,15 +9,21 @@ To compile this package to generate the PHP Memcached extension, do the followin
 
 0) Install the required dependencies. 
 
-> sudo yum install php php-devel zlib-devel
+> sudo yum install php php-devel zlib-devel php-pear
 
 1) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
+
+Note: if you want to compile the PHP-memcached client with igbinary support, run the following additional command to install igbinary
+
+> sudo pecl install igbinary
 
 2) Run the following set of commands under the current directory:
 
 > phpize
 
-> ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt;
+> ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; &lt;other options&gt;
+
+For igbinary support, specify "--enable-memcached-igbinary" in "other options".
 
 Note: you can statically link the libmemcached library into the PHP binary so it can be ported across various Linux platforms. To do that, run the following command, otherwise proceed to "make" 
 
