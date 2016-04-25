@@ -68,6 +68,8 @@ c) Run the following set of commands under the current directory:
 
 > ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
 
+Note: If you want to enable igbinary support, checkout, compile, and install the upstream igbinary7 package https://github.com/igbinary/igbinary7, and append the option "--enable-memcached-igbinary" at the end of the "configure" command above. 
+
 > make
 
 > make install
@@ -83,4 +85,4 @@ Note: you can statically link the libmemcached library into the PHP binary so it
  * [php-memcached] (https://github.com/php-memcached-dev/php-memcached)
  * [libmemcached](http://tangent.org/552/libmemcached.html)
  * [memcached](http://www.danga.com/memcached/)
- * [igbinary](https://github.com/phadej/igbinary/)
+ * [igbinary](https://github.com/igbinary/igbinary7)
