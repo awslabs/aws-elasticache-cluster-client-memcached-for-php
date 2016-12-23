@@ -67,8 +67,8 @@ function install_libmemcached() {
 }
 
 function install_igbinary() {
-    git clone https://github.com/igbinary/igbinary7.git
-    pushd igbinary7
+    git clone https://github.com/igbinary/igbinary.git
+    pushd igbinary
         phpize
         ./configure
         make
@@ -79,7 +79,6 @@ function install_igbinary() {
 function install_msgpack() {
     git clone https://github.com/msgpack/msgpack-php.git
     pushd msgpack-php
-        git checkout php7
         phpize
         ./configure
         make
@@ -238,7 +237,7 @@ case $ACTION in
         # Install igbinary extension
         install_igbinary
 
-        # install msgpack
+        # Install msgpack extension
         install_msgpack
 
         install_memcached

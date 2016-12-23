@@ -93,22 +93,19 @@ typedef struct {
 	php_memc_serializer_type type;
 } php_memc_serializer;
 
-#ifdef HAVE_MEMCACHED_IGBINARY
-#define SERIALIZER_DEFAULT SERIALIZER_IGBINARY
-#define SERIALIZER_DEFAULT_NAME "igbinary"
-#elif HAVE_MEMCACHED_MSGPACK
-#define SERIALIZER_DEFAULT SERIALIZER_MSGPACK
-#define SERIALIZER_DEFAULT_NAME "msgpack"
+#if defined(HAVE_MEMCACHED_IGBINARY)
+# define SERIALIZER_DEFAULT SERIALIZER_IGBINARY
+# define SERIALIZER_DEFAULT_NAME "igbinary"
+#elif defined(HAVE_MEMCACHED_MSGPACK)
+# define SERIALIZER_DEFAULT SERIALIZER_MSGPACK
+# define SERIALIZER_DEFAULT_NAME "msgpack"
 #else
-#define SERIALIZER_DEFAULT SERIALIZER_PHP
-#define SERIALIZER_DEFAULT_NAME "php"
+# define SERIALIZER_DEFAULT SERIALIZER_PHP
+# define SERIALIZER_DEFAULT_NAME "php"
 #endif /* HAVE_MEMCACHED_IGBINARY / HAVE_MEMCACHED_MSGPACK */
 
-#if LIBMEMCACHED_WITH_SASL_SUPPORT
-# if defined(HAVE_SASL_SASL_H)
-#  include <sasl/sasl.h>
-#  define HAVE_MEMCACHED_SASL 1
-# endif
+#ifdef HAVE_MEMCACHED_SASL
+# include <sasl/sasl.h>
 #endif
 
 #ifdef HAVE_MEMCACHED_PROTOCOL
@@ -194,7 +191,6 @@ ZEND_BEGIN_MODULE_GLOBALS(php_memcached)
 
 	/* For deprecated values */
 	zend_long no_effect;
-
 
 #ifdef HAVE_MEMCACHED_PROTOCOL
 	struct {
