@@ -24,7 +24,7 @@ PHP_ARG_ENABLE(memcached-sasl, whether to enable memcached sasl support,
 [  --disable-memcached-sasl          Disable memcached sasl support], yes, no)
 
 PHP_ARG_ENABLE(memcached-protocol, whether to enable memcached protocol support,
-[  --enable-memcached-protocol          Enable memcached protocoll support], no, no)
+[  --enable-memcached-protocol          Enable memcached protocol support], no, no)
 
 PHP_ARG_WITH(system-fastlz, whether to use system FastLZ bibrary,
 [  --with-system-fastlz                 Use system FastLZ bibrary], no, no)
@@ -318,7 +318,7 @@ if test "$PHP_MEMCACHED" != "no"; then
       AC_DEFINE(HAVE_MEMCACHED_EXIST, [1], [Whether memcached_exist is defined])
     fi
 
-    PHP_MEMCACHED_FILES="php_memcached.c php_libmemcached_compat.c  g_fmt.c"
+    PHP_MEMCACHED_FILES="php_memcached.c g_fmt.c"
 
     if test "$PHP_SYSTEM_FASTLZ" != "no"; then
       AC_CHECK_HEADERS([fastlz.h], [ac_cv_have_fastlz="yes"], [ac_cv_have_fastlz="no"])

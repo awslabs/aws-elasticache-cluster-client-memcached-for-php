@@ -113,7 +113,7 @@ time_t s_lock_expiration()
 		return s_adjust_expiration(MEMC_SESS_INI(lock_expiration));
 	}
 	else {
-		zend_long max_execution_time = zend_ini_long(ZEND_STRS("max_execution_time"), 0);
+		zend_long max_execution_time = zend_ini_long(ZEND_STRL("max_execution_time"), 0);
 		if (max_execution_time > 0) {
 			return s_adjust_expiration(max_execution_time);
 		}
@@ -442,6 +442,7 @@ PS_READ_FUNC(memcached)
 		*val = ZSTR_EMPTY_ALLOC();
 		return SUCCESS;
 	} else {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "error getting session from memcached: %s", memcached_last_error_message(memc));
 		return FAILURE;
 	}
 }
@@ -470,6 +471,8 @@ PS_WRITE_FUNC(memcached)
 	do {
 		if (memcached_set(memc, key->val, key->len, val->val, val->len, expiration, 0) == MEMCACHED_SUCCESS) {
 			return SUCCESS;
+		} else {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "error saving session to memcached: %s", memcached_last_error_message(memc));
 		}
 	} while (--retries > 0);
 
@@ -527,7 +530,7 @@ PS_VALIDATE_SID_FUNC(memcached)
 {
 	memcached_st *memc = PS_GET_MOD_DATA();
 
-	if (php_memcached_exist(memc, key) == MEMCACHED_SUCCESS) {
+	if (memcached_exist(memc, key->val, key->len) == MEMCACHED_SUCCESS) {
 		return SUCCESS;
 	} else {
 		return FAILURE;
