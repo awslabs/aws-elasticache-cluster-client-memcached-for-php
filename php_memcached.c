@@ -51,12 +51,6 @@
 # include "ext/msgpack/php_msgpack.h"
 #endif
 
-#ifdef ZTS
-#define MEMC_G(v) TSRMG(php_memcached_globals_id, zend_php_memcached_globals *, memc.v)
-#else
-#define MEMC_G(v) (php_memcached_globals.memc.v)
-#endif
-
 static int le_memc;
 
 static int php_memc_list_entry(void) {
@@ -238,23 +232,13 @@ static inline php_memc_server_t *php_memc_server_fetch_object(zend_object *obj) 
 }
 #define Z_MEMC_SERVER_P(zv) php_memc_server_fetch_object(Z_OBJ_P(zv))
 
-#ifdef ZTS
-#define MEMC_SERVER_G(v) TSRMG(php_memcached_globals_id, zend_php_memcached_globals *, server.v)
-#else
-#define MEMC_SERVER_G(v) (php_memcached_globals.server.v)
-#endif
-#endif
-
-static zend_class_entry *memcached_ce = NULL;
-
-static zend_class_entry *memcached_exception_ce = NULL;
-
-static zend_object_handlers memcached_object_handlers;
-
-#ifdef HAVE_MEMCACHED_PROTOCOL
 static zend_object_handlers memcached_server_object_handlers;
 static zend_class_entry *memcached_server_ce = NULL;
 #endif
+
+static zend_class_entry *memcached_ce = NULL;
+static zend_class_entry *memcached_exception_ce = NULL;
+static zend_object_handlers memcached_object_handlers;
 
 #ifdef HAVE_SPL
 static zend_class_entry *spl_ce_RuntimeException = NULL;
@@ -2741,7 +2725,15 @@ PHP_METHOD(Memcached, getAllKeys)
 	array_init(return_value);
 
 	rc = memcached_dump(intern->memc, callback, return_value, 1);
-	if (s_memc_status_handle_result_code(intern, rc) == FAILURE) {
+
+	/* Ignore two errors. libmemcached has a hardcoded loop of 200 slab
+	 * classes that matches memcached < 1.4.24, at which version the server
+	 * has only 63 slabs and throws an error when requesting the 64th slab.
+	 *
+	 * In multi-server some non-deterministic number of elements will be dropped.
+	 */
+	if (rc != MEMCACHED_CLIENT_ERROR && rc != MEMCACHED_SERVER_ERROR
+	    && s_memc_status_handle_result_code(intern, rc) == FAILURE) {
 		zval_dtor(return_value);
 		RETURN_FALSE;
 	}
@@ -3644,7 +3636,7 @@ PHP_METHOD(MemcachedServer, run)
 static
 PHP_METHOD(MemcachedServer, on)
 {
-	long event;
+	zend_long event;
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache;
 	zend_bool rc = 0;
@@ -4022,7 +4014,6 @@ static zend_function_entry memcached_class_methods[] = {
 	MEMC_ME(getLastErrorMessage,		arginfo_getLastErrorMessage)
 	MEMC_ME(getLastErrorCode,		arginfo_getLastErrorCode)
 	MEMC_ME(getLastErrorErrno,		arginfo_getLastErrorErrno)
-
 	MEMC_ME(getLastDisconnectedServer,	arginfo_getLastDisconnectedServer)
 
 	MEMC_ME(getStats,           arginfo_getStats)
@@ -4218,7 +4209,6 @@ static void php_memc_register_constants(INIT_FUNC_ARGS)
 	REGISTER_MEMC_CLASS_CONST_LONG(DISTRIBUTION_MODULA, MEMCACHED_DISTRIBUTION_MODULA);
 	REGISTER_MEMC_CLASS_CONST_LONG(DISTRIBUTION_CONSISTENT, MEMCACHED_DISTRIBUTION_CONSISTENT);
 	REGISTER_MEMC_CLASS_CONST_LONG(DISTRIBUTION_VIRTUAL_BUCKET, MEMCACHED_DISTRIBUTION_VIRTUAL_BUCKET);
-
 	REGISTER_MEMC_CLASS_CONST_LONG(OPT_LIBKETAMA_COMPATIBLE, MEMCACHED_BEHAVIOR_KETAMA_WEIGHTED);
 	REGISTER_MEMC_CLASS_CONST_LONG(OPT_LIBKETAMA_HASH, MEMCACHED_BEHAVIOR_KETAMA_HASH);
 	REGISTER_MEMC_CLASS_CONST_LONG(OPT_TCP_KEEPALIVE, MEMCACHED_BEHAVIOR_TCP_KEEPALIVE);
