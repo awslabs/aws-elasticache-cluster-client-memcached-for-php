@@ -21,9 +21,15 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mkoppanen@php.net</email>
   <active>yes</active>
  </lead>
- <date>2017-02-07</date>
+ <lead>
+  <name>Aaron Stone</name>
+  <user>sodabrew</user>
+  <email>aaron@serendipity.cx</email>
+  <active>yes</active>
+ </lead>
+ <date>2017-02-19</date>
  <version>
-  <release>3.0.1</release>
+  <release>3.0.3</release>
   <api>3.0.0</api>
  </version>
  <stability>
@@ -37,11 +43,8 @@ and the oldest actively tested version is 1.0.2. It is highly recommended to use
 libmemcached.
 
 Fixes
- * Add API entries for flushBuffers() and getAllKeys() (#316)
- * Ignore specific errors from memcached_dump for getAllKeys() with newer memcached servers (#315)
- * Fix compiling with memcached binary protocol enabled (#312)
- * Restore php_libmemcached_compat with workaround for missing memcached_exists (#314)
- * Travis CI purge old versions of memcached and libmemcached (#309)
+ * Fix crash when checking session data with older versions of libmemcached (#328)
+ * Fix crash due to zend_mm_corrupted when fetching session data (#327)
  </notes>
  <contents>
   <dir name="/">
@@ -68,6 +71,7 @@ Fixes
    <file role='src' name='fastlz/fastlz.c'/>
    <file role='src' name='fastlz/fastlz.h'/>
    <dir name="tests">
+    <file role='test' name='skipif.inc'/>
     <file role='test' name='001.phpt'/>
     <file role='test' name='version.phpt'/>
     <file role='test' name='bug_16084.phpt'/>
@@ -112,6 +116,7 @@ Fixes
     <file role='test' name='session_basic.phpt'/>
     <file role='test' name='session_basic2.phpt'/>
     <file role='test' name='session_basic3.phpt'/>
+    <file role='test' name='session_persistent.phpt'/>
     <file role='test' name='set_large.phpt'/>
     <file role='test' name='setoptions.phpt'/>
     <file role='test' name='touch_binary.phpt'/>
@@ -137,6 +142,7 @@ Fixes
     <file role='test' name='setmulti.phpt'/>
     <file role='test' name='cachecallback.phpt'/>
     <file role='test' name='incrdecr.phpt'/>
+    <file role='test' name='incrdecr_64.phpt'/>
     <file role='test' name='incrdecr_initial.phpt'/>
     <file role='test' name='incrdecr_invalid_key.phpt'/>
     <file role='test' name='incrdecr_bykey.phpt'/>
@@ -149,6 +155,7 @@ Fixes
     <file role='test' name='gh_155.phpt'/>
     <file role='test' name='get_flags.phpt'/>
     <file role='test' name='session_lock.phpt'/>
+    <file role='test' name='session_lazy_warning.phpt'/>
     <file role='test' name='session_regenerate.phpt'/>
     <file role='test' name='stats.phpt'/>
     <file role='test' name='default_behavior.phpt'/>
@@ -182,6 +189,50 @@ Fixes
   <configureoption name="with-libmemcached-dir" default="no" prompt="libmemcached directory"/>
  </extsrcrelease>
  <changelog>
+    <release>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <version>
+        <release>3.0.2</release>
+        <api>3.0.0</api>
+      </version>
+      <date>2016-02-12</date>
+      <notes>
+PHP7 release of memcached extension. Note that support for libmemcached 0.x series has been discontinued
+and the oldest actively tested version is 1.0.2. It is highly recommended to use version 1.0.18 of
+libmemcached.
+
+Fixes
+ * Update warning for touch command in binary protocol mode with libmemcached below 1.0.18 (#322)
+ * Add tests for 64-bit increment/decrement/incrementByKey/decrementByKey (#321)
+ * Fix tests for 32-bit increment/decrement/incrementByKey/decrementByKey (#319)
+      </notes>
+    </release>
+    <release>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <version>
+        <release>3.0.1</release>
+        <api>3.0.0</api>
+      </version>
+      <date>2016-02-07</date>
+      <notes>
+PHP7 release of memcached extension. Note that support for libmemcached 0.x series has been discontinued
+and the oldest actively tested version is 1.0.2. It is highly recommended to use version 1.0.18 of
+libmemcached.
+
+Fixes
+ * Add API entries for flushBuffers() and getAllKeys() (#316)
+ * Ignore specific errors from memcached_dump for getAllKeys() with newer memcached servers (#315)
+ * Fix compiling with memcached binary protocol enabled (#312)
+ * Restore php_libmemcached_compat with workaround for missing memcached_exists (#314)
+ * Travis CI purge old versions of memcached and libmemcached (#309)
+      </notes>
+    </release>
     <release>
       <stability>
         <release>stable</release>
