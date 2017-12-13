@@ -36,9 +36,9 @@ Note: you can statically link the libmemcached library into the PHP binary so it
 
 # Resources
 ---------
- * [Github link] (https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php)
+ * [Github link](https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php)
  * [AmazonElastiCache Auto Discovery](http://docs.amazonwebservices.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html)
- * [php-memcached] (https://github.com/php-memcached-dev/php-memcached)
+ * [php-memcached](https://github.com/php-memcached-dev/php-memcached)
  * [libmemcached](http://tangent.org/552/libmemcached.html)
  * [memcached](http://www.danga.com/memcached/)
  * [igbinary](https://github.com/phadej/igbinary/)
