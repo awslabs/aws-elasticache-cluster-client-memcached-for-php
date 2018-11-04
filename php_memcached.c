@@ -194,27 +194,34 @@ static inline php_memc_object_t *php_memc_fetch_object(zend_object *obj) {
 		php_error_docref(NULL, E_WARNING, "Memcached constructor was not called");    \
 		return;                                                                       \
 	}                                                                                 \
-	memc_user_data = (php_memc_user_data_t *) memcached_get_user_data(intern->memc);
+	memc_user_data = (php_memc_user_data_t *) memcached_get_user_data(intern->memc);  \
+	(void)memc_user_data; /* avoid unused variable warning */
 
 static
-zend_bool s_memc_valid_key_binary(const char *key)
+zend_bool s_memc_valid_key_binary(zend_string *key)
 {
-	return strchr(key, '\n') == NULL;
+	return memchr(ZSTR_VAL(key), '\n', ZSTR_LEN(key)) == NULL;
 }
 
 static
-zend_bool s_memc_valid_key_ascii(const char *key)
+zend_bool s_memc_valid_key_ascii(zend_string *key)
 {
-	while (*key && !iscntrl(*key) && !isspace(*key)) ++key;
-	return *key == '\0';
+	const char *str = ZSTR_VAL(key);
+	size_t i, len = ZSTR_LEN(key);
+
+	for (i = 0; i < len; i++) {
+		if (iscntrl(str[i]) || isspace(str[i]))
+			return 0;
+	}
+	return 1;
 }
 
 #define MEMC_CHECK_KEY(intern, key)                                               \
 	if (UNEXPECTED(ZSTR_LEN(key) == 0 ||                                          \
 		ZSTR_LEN(key) > MEMC_OBJECT_KEY_MAX_LENGTH ||                             \
 		(memcached_behavior_get(intern->memc, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL) \
-				? !s_memc_valid_key_binary(ZSTR_VAL(key))                         \
-				: !s_memc_valid_key_ascii(ZSTR_VAL(key))                          \
+				? !s_memc_valid_key_binary(key)                                   \
+				: !s_memc_valid_key_ascii(key)                                    \
 		))) {                                                                     \
 		intern->rescode = MEMCACHED_BAD_KEY_PROVIDED;                             \
 		RETURN_FALSE;                                                             \
@@ -308,7 +315,7 @@ PHP_INI_MH(OnUpdateSessionPrefixString)
 			php_error_docref(NULL, E_WARNING, "memcached.sess_prefix too long (max: %d)", MEMCACHED_MAX_KEY - 1);
 			return FAILURE;
 		}
-		if (!s_memc_valid_key_ascii(ZSTR_VAL(new_value))) {
+		if (!s_memc_valid_key_ascii(new_value)) {
 			php_error_docref(NULL, E_WARNING, "memcached.sess_prefix cannot contain whitespace or control characters");
 			return FAILURE;
 		}
@@ -898,7 +905,7 @@ zend_bool s_serialize_value (php_memc_serializer_type serializer, zval *value, s
 				php_error_docref(NULL, E_WARNING, "could not serialize value with igbinary");
 				return 0;
 			}
-			smart_str_appendl (buf, buffer, buffer_len);
+			smart_str_appendl (buf, (char *)buffer, buffer_len);
 			efree(buffer);
 			MEMC_VAL_SET_TYPE(*flags, MEMC_VAL_IS_IGBINARY);
 		}
@@ -1018,7 +1025,6 @@ zend_string *s_zval_to_payload(php_memc_object_t *intern, zval *value, uint32_t 
 		}
 			break;
 	}
-	zend_string_forget_hash_val(payload);
 
 	/* turn off compression for values below the threshold */
 	if (ZSTR_LEN(payload) == 0 || ZSTR_LEN(payload) < MEMC_G(compression_threshold)) {
@@ -1058,7 +1064,7 @@ zend_bool s_memc_write_zval (php_memc_object_t *intern, php_memc_write_op op, ze
 {
 	uint32_t flags = 0;
 	zend_string *payload = NULL;
-	memcached_return status;
+	memcached_return status = 0;
 	php_memc_user_data_t *memc_user_data = memcached_get_user_data(intern->memc);
 	zend_long retries = memc_user_data->store_retry_count;
 
@@ -3382,7 +3388,7 @@ zend_string *s_decompress_value (const char *payload, size_t payload_len, uint32
 	is_zlib   = MEMC_VAL_HAS_FLAG(flags, MEMC_VAL_COMPRESSION_ZLIB);
 
 	if (!is_fastlz && !is_zlib) {
-		php_error_docref(NULL, E_WARNING, "could not decompress value: unrecognised encryption type");
+		php_error_docref(NULL, E_WARNING, "could not decompress value: unrecognised compression type");
 		return NULL;
 	}
 
@@ -3775,27 +3781,23 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO_EX(arginfo_append, 0, 0, 2)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
-	ZEND_ARG_INFO(0, expiration)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_appendByKey, 0, 0, 3)
 	ZEND_ARG_INFO(0, server_key)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
-	ZEND_ARG_INFO(0, expiration)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_prepend, 0, 0, 2)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
-	ZEND_ARG_INFO(0, expiration)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_prependByKey, 0, 0, 3)
 	ZEND_ARG_INFO(0, server_key)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
-	ZEND_ARG_INFO(0, expiration)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_cas, 0, 0, 3)
@@ -3875,6 +3877,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_addServer, 0, 0, 2)
 	ZEND_ARG_INFO(0, weight)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_getStats, 0, 0, 0)
+	ZEND_ARG_INFO(0, type)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO(arginfo_addServers, 0)
 	ZEND_ARG_ARRAY_INFO(0, servers, 0)
 ZEND_END_ARG_INFO()
@@ -3911,10 +3917,12 @@ ZEND_BEGIN_ARG_INFO(arginfo_getOption, 0)
 	ZEND_ARG_INFO(0, option)
 ZEND_END_ARG_INFO()
 
+#ifdef HAVE_MEMCACHED_SASL
 ZEND_BEGIN_ARG_INFO(arginfo_setSaslAuthData, 0)
 	ZEND_ARG_INFO(0, username)
 	ZEND_ARG_INFO(0, password)
 ZEND_END_ARG_INFO()
+#endif
 
 ZEND_BEGIN_ARG_INFO(arginfo_setOption, 0)
 	ZEND_ARG_INFO(0, option)
@@ -3929,10 +3937,6 @@ ZEND_BEGIN_ARG_INFO(arginfo_setBucket, 3)
 	ZEND_ARG_INFO(0, host_map)
 	ZEND_ARG_INFO(0, forward_map)
 	ZEND_ARG_INFO(0, replicas)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_getStats, 0)
-	ZEND_ARG_INFO(0, args)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_getVersion, 0)
