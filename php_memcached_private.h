@@ -72,6 +72,13 @@ typedef unsigned long int uint32_t;
 #  endif
 #endif
 
+/* Zend API changes in PHP 7.3 @ https://github.com/php/php-src/pull/2880 - Backwards compatibility @  */
+#if PHP_VERSION_ID < 70300
+#  define GC_ADDREF(p)            ++GC_REFCOUNT(p)
+#  define GC_DELREF(p)            --GC_REFCOUNT(p)
+#  define GC_SET_REFCOUNT(p, rc)  GC_REFCOUNT(p) = rc
+#endif
+
 /****************************************
   Structures and definitions
 ****************************************/
