@@ -343,11 +343,11 @@ PHP_INI_BEGIN()
 	MEMC_SESSION_INI_ENTRY("sasl_password",          "",           OnUpdateString,         sasl_password)
 	MEMC_SESSION_INI_ENTRY("prefix",                 "memc.sess.", OnUpdateSessionPrefixString,         prefix)
 	MEMC_SESSION_INI_ENTRY("persistent",             "0",          OnUpdateBool,           persistent_enabled)
-	
+
 	/* Deprecated */
 	STD_PHP_INI_ENTRY("memcached.sess_lock_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
 	STD_PHP_INI_ENTRY("memcached.sess_lock_max_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
-	
+
 #endif
 
 	MEMC_INI_ENTRY("compression_type",      "fastlz",                OnUpdateCompressionType, compression_name)
@@ -609,7 +609,7 @@ memcached_return php_memc_result_apply(php_memc_object_t *intern, php_memc_resul
 
 			const char *res_key;
 			size_t res_key_len;
-			
+
 			if (!s_memcached_result_to_zval(intern->memc, &result, &val)) {
 				if (EG(exception)) {
 					status = MEMC_RES_PAYLOAD_FAILURE;
@@ -681,7 +681,7 @@ zend_bool php_memc_mget_apply(php_memc_object_t *intern, zend_string *server_key
 
 	/* Need to handle result code before restoring cas flags, would mess up errno */
 	mget_status = s_memc_status_handle_result_code(intern, status);
-		
+
 	if (with_cas && !orig_cas_flag) {
 		memcached_behavior_set (intern->memc, MEMCACHED_BEHAVIOR_SUPPORT_CAS, orig_cas_flag);
 	}
@@ -1083,15 +1083,15 @@ zend_bool s_memc_write_zval (php_memc_object_t *intern, php_memc_write_op op, ze
 			case MEMC_OP_TOUCH:
 				status = php_memcached_touch_by_key(intern->memc, ZSTR_VAL(server_key), ZSTR_LEN(server_key), ZSTR_VAL(key), ZSTR_LEN(key), expiration);
 			break;
-			
+
 			case MEMC_OP_ADD:
 				status = memc_write_using_fn_by_key(memcached_add_by_key);
 			break;
-			
+
 			case MEMC_OP_REPLACE:
 				status = memc_write_using_fn_by_key(memcached_replace_by_key);
 			break;
-			
+
 			case MEMC_OP_APPEND:
 				status = memc_write_using_fn_by_key(memcached_append_by_key);
 			break;
@@ -1115,15 +1115,15 @@ retry:
 			case MEMC_OP_TOUCH:
 				status = php_memcached_touch(intern->memc, ZSTR_VAL(key), ZSTR_LEN(key), expiration);
 			break;
-			
+
 			case MEMC_OP_ADD:
 				status = memc_write_using_fn(memcached_add);
 			break;
-			
+
 			case MEMC_OP_REPLACE:
 				status = memc_write_using_fn(memcached_replace);
 			break;
-			
+
 			case MEMC_OP_APPEND:
 				status = memc_write_using_fn(memcached_append);
 			break;
@@ -1275,7 +1275,7 @@ static PHP_METHOD(Memcached, __construct)
 		le.type = php_memc_list_entry();
 		le.ptr  = intern->memc;
 
-		GC_REFCOUNT(&le) = 1;
+		GC_SET_REFCOUNT(&le, 1);
 
 		/* plist_key is not a persistent allocated key, thus we use str_update here */
 		if (zend_hash_str_update_mem(&EG(persistent_list), ZSTR_VAL(plist_key), ZSTR_LEN(plist_key), &le, sizeof(le)) == NULL) {
@@ -1474,7 +1474,7 @@ zend_bool s_get_multi_apply_fn(php_memc_object_t *intern, zend_string *key, zval
 		add_assoc_zval(&node, "cas",   cas);
 		add_assoc_long(&node, "flags", (zend_long) MEMC_VAL_GET_USER_FLAGS(flags));
 
-		zend_symtable_update(Z_ARRVAL_P(context->return_value), key, &node); 
+		zend_symtable_update(Z_ARRVAL_P(context->return_value), key, &node);
 	}
 	else {
 		zend_symtable_update(Z_ARRVAL_P(context->return_value), key, value);
@@ -1602,7 +1602,7 @@ zend_bool s_result_callback_apply(php_memc_object_t *intern, zend_string *key, z
 	context->fci.retval = &retval;
 	context->fci.params = params;
 	context->fci.param_count = 2;
-	
+
 	if (zend_call_function(&context->fci, &context->fcc) == FAILURE) {
 		php_error_docref(NULL, E_WARNING, "could not invoke result callback");
 		status = 0;
@@ -3648,7 +3648,7 @@ PHP_METHOD(MemcachedServer, on)
 
 		Z_TRY_ADDREF(fci.function_name);
 		if (fci.object) {
-			GC_REFCOUNT(fci.object)++;
+			GC_ADDREF(fci.object);
 		}
 	}
 	RETURN_BOOL(rc);
@@ -4291,7 +4291,7 @@ static void php_memc_register_constants(INIT_FUNC_ARGS)
 	 * Client mode types
 	*/
 	REGISTER_MEMC_CLASS_CONST_LONG(STATIC_CLIENT_MODE, STATIC_MODE);
-	REGISTER_MEMC_CLASS_CONST_LONG(DYNAMIC_CLIENT_MODE, DYNAMIC_MODE); 
+	REGISTER_MEMC_CLASS_CONST_LONG(DYNAMIC_CLIENT_MODE, DYNAMIC_MODE);
 
 	/*
 	 * Serializer types.
