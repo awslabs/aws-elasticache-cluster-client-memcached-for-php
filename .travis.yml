@@ -1,19 +1,23 @@
-sudo: required
-dist: trusty
+dist: xenial
 
 language: php
 php:
-    - 7.0
+    - master
+    - 7.4snapshot
+    - 7.3
+    - 7.2
     - 7.1
+    - 7.0
 
 matrix:
     fast_finish: true
+    allow_failures:
+        - php: master
 
 env:
     - LIBMEMCACHED_VERSION=1.0.18 # Debian Jessie / Ubuntu Xenial
     - LIBMEMCACHED_VERSION=1.0.16 # RHEL / CentOS 7
     - LIBMEMCACHED_VERSION=1.0.8  # Debian Wheezy / Ubuntu Trusty
-    - LIBMEMCACHED_VERSION=1.0.2  # Ancient
 
 addons:
     apt:
