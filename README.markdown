@@ -1,6 +1,6 @@
 # Amazon ElastiCache Cluster Client
 
-Amazon ElastiCache Cluster Client is used to connect to ElastiCache for Memcached clusters. This client supports auto-discovery capabilities which allow you to easily manage your Memcached cluster configuration. This extension uses Amazon ElastiCache fork of libmemcached library to provide API for communicating with ElastiCache servers. Our changes are based on open-source memcached extension v.2.1.0 from https://github.com/php-memcached-dev/php-memcached. This code branch is compatible with PHP 7.x. Other PHP versions (including PHP 5.x) are not supported. 
+Amazon ElastiCache Cluster Client is used to connect to ElastiCache for Memcached clusters. This client supports auto-discovery capabilities which allow you to easily manage your Memcached cluster configuration. This extension uses Amazon ElastiCache fork of libmemcached library to provide API for communicating with ElastiCache servers. Our changes are based on open-source memcached extension v.2.1.0 from https://github.com/php-memcached-dev/php-memcached. This code branch is compatible with PHP 7.x. Other PHP versions (including PHP 5.x) are not supported.
 
 This client library is released under the [Apache 2.0 License](http://aws.amazon.com/apache-2-0/).
 
@@ -24,15 +24,37 @@ e) With root permission, copy the extracted artifact file amazon-elasticache-clu
 
 f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php/7.0/cli/php.ini
 
---- Amazon Linux 201803 AMI ---
+--- Amazon Linux 2 / Amazon Linux 201803 AMI ---
 
 a) Launch a new instance from the AMI
 
 b) Run the following command
 
-> sudo yum install gcc-c++
+> sudo yum install gcc-c++ zlib-devel
 
 c) Install PHP 7.x
+Use amazon-linux-extras to install php7.4
+
+> which amazon-linux-extras
+
+If not installed, use following command to install
+
+> sudo yum install -y amazon-linux-extras
+
+confirm that PHP 7.x topic is available in our Amazon Linux 2 machine
+
+> sudo  amazon-linux-extras | grep php
+
+As we can see all PHP 7 topics, in this example we’ll enable php7.4 topic.
+
+> sudo amazon-linux-extras enable php7.4
+
+Now install PHP packages from the repository.
+
+> sudo yum clean metadata
+
+> sudo yum install php php-{pear,cgi,common,curl,mbstring,gd,mysqlnd,gettext,bcmath,json,xml,fpm,intl,zip,imap
+
 
 d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.x/latest-64bit
 
@@ -58,7 +80,7 @@ f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /e
 
 # To compile the client from source, do the following set of steps:
 
-a) Launch a Linux-based EC2 instance and install PHP 7.x along with its required dependencies. 
+a) Launch a Linux-based EC2 instance and install PHP 7.x along with its required dependencies.
 
 b) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
 
@@ -68,7 +90,7 @@ c) Run the following set of commands under the current directory:
 
 > ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
 
-Note: If you want to enable igbinary support, checkout, compile, and install the upstream igbinary7 package https://github.com/igbinary/igbinary7, and append the option "--enable-memcached-igbinary" at the end of the "configure" command above. 
+Note: If you want to enable igbinary support, checkout, compile, and install the upstream igbinary7 package https://github.com/igbinary/igbinary7, and append the option "--enable-memcached-igbinary" at the end of the "configure" command above.
 
 > make
 
@@ -83,6 +105,7 @@ Note: you can statically link the libmemcached library into the PHP binary so it
  * [Github link] (https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php)
  * [AmazonElastiCache Auto Discovery](http://docs.amazonwebservices.com/AmazonElastiCache/latest/UserGuide/AutoDiscovery.html)
  * [php-memcached] (https://github.com/php-memcached-dev/php-memcached)
+ * [How do I install a software package from the Extras Library on an EC2 instance running Amazon Linux 2?](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/)
 
 Dependencies
 ------------
