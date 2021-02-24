@@ -18,7 +18,7 @@ b) Run the following commands
 
 c) Install PHP 7.x
 
-d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.x/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console
 
 e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib/php/20151012
 
@@ -56,7 +56,7 @@ Now install PHP packages from the repository.
 > sudo yum install php php-{pear,cgi,common,curl,mbstring,gd,mysqlnd,gettext,bcmath,json,xml,fpm,intl,zip,imap
 
 
-d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.x/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console
 
 e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php/modules/
 
@@ -72,7 +72,7 @@ b) Run the following command
 
 c) Install PHP 7.x
 
-d) Download and unzip Amazon ElastiCache Cluster Client from https://s3.amazonaws.com/elasticache-downloads/ClusterClient/PHP-7.x/latest-64bit
+d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console
 
 e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib64/php7/extensions/
 
