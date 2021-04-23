@@ -100,6 +100,8 @@ Note: you can statically link the libmemcached library into the PHP binary so it
 
 > sed -i "s#-lmemcached#<libmemcached build directory>\/lib\/libmemcached.a -lcrypt -lpthread -lm -lstdc++ -lsasl2#" Makefile
 
+> sed -i "s#-lmemcachedutil#<libmemcached build directory>/lib/libmemcachedutil.a#" Makefile
+
 # Resources
 ---------
  * [Github link] (https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php)
