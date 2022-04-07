@@ -249,6 +249,7 @@ static zend_class_entry *memcached_server_ce = NULL;
 
 static zend_class_entry *memcached_ce = NULL;
 static zend_class_entry *memcached_exception_ce = NULL;
+static zend_class_entry *memcached_tls_context_config_ce = NULL;
 static zend_object_handlers memcached_object_handlers;
 
 #ifdef HAVE_SPL
@@ -3767,6 +3768,12 @@ zend_class_entry *php_memc_get_exception(void)
 }
 
 PHP_MEMCACHED_API
+zend_class_entry *php_memc_get_tls_context_config(void)
+{
+	return memcached_tls_context_config_ce;
+}
+
+PHP_MEMCACHED_API
 zend_class_entry *php_memc_get_exception_base(int root)
 {
 #ifdef HAVE_SPL
@@ -4404,6 +4411,12 @@ static void php_memc_register_constants(INIT_FUNC_ARGS)
 	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_SASL, 0);
 #endif
 
+#ifdef HAVE_MEMCACHED_TLS
+	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_TLS, 1);
+#else
+	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_TLS, 0);
+#endif
+
 	/*
 	 * libmemcached behavior options
 	 */
@@ -4620,6 +4633,9 @@ PHP_MINIT_FUNCTION(memcached)
 	/* TODO
 	 * possibly declare custom exception property here
 	 */
+
+    INIT_CLASS_ENTRY(ce, "MemcachedTLSContextConfig", NULL);
+	memcached_tls_context_config_ce = zend_register_internal_class(&ce);
 
 	php_memc_register_constants(INIT_FUNC_ARGS_PASSTHRU);
 	REGISTER_INI_ENTRIES();

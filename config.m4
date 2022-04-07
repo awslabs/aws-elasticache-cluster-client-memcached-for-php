@@ -21,6 +21,9 @@ PHP_ARG_ENABLE(memcached-msgpack, whether to enable memcached msgpack serializer
 PHP_ARG_ENABLE(memcached-sasl, whether to enable memcached sasl support,
 [  --enable-memcached-sasl         Enable memcached sasl support], yes, no)
 
+PHP_ARG_ENABLE(memcached-tls, whether to enable memcached TLS/OpenSSL support,
+[  --enable-memcached-tls         Enable memcached TLS/OpenSSL support], yes, no)
+
 PHP_ARG_ENABLE(memcached-protocol, whether to enable memcached protocol support,
 [  --enable-memcached-protocol     Enable memcached protocol support], no, no)
 
@@ -289,6 +292,45 @@ if test "$PHP_MEMCACHED" != "no"; then
         AC_DEFINE(HAVE_MEMCACHED_SASL, 1, [Have SASL support])
       else
         AC_MSG_ERROR([no, libmemcached built with sasl disabled. Run configure with --disable-memcached-sasl or update libmemcached with sasl support])
+      fi
+    else
+      AC_MSG_RESULT([no])
+    fi
+
+
+    dnl # Always check if libmemcached was built with TLS (OpenSSL) support,
+    dnl # because it will require ssl.h even if not used here.
+    AC_CACHE_CHECK([for libmemcached ssl.h requirement], ac_cv_memc_tls_support, [
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <libmemcached/memcached.h>]], [[
+        #if USE_TLS
+          /* yes */
+        #else
+        #  error "no TLS support"
+        #endif
+        ]])],
+        [ac_cv_memc_tls_support="yes"],
+        [ac_cv_memc_tls_support="no"]
+      )
+    ])
+
+    if test "$ac_cv_memc_tls_support" = "yes"; then
+      AC_CHECK_HEADERS([openssl/ssl.h], [ac_cv_have_memc_tls_h="yes"], [ac_cv_have_memc_tls_h="no"])
+    fi
+
+    dnl # If libmemcached requires ssl.h but we can't find ssl.h, that's a hard error
+    dnl # regardless of the option --enable-memcached-tls or --disable-memcached-tls
+    AC_MSG_CHECKING([whether to enable TLS support])
+    if test "$ac_cv_memc_tls_support" = "yes" && test "$ac_cv_have_memc_tls_h" = "no"; then
+      AC_MSG_ERROR([no, libmemcached built with TLS required, but openssl/ssh.h not found.])
+    fi
+
+    if test "$PHP_MEMCACHED_TLS" != "no"; then
+      AC_MSG_RESULT(yes)
+      if test "$ac_cv_memc_tls_support" = "yes" && test "$ac_cv_have_memc_tls_h" = "yes"; then
+        PHP_CHECK_LIBRARY(ssl, OPENSSL_init_ssl, [PHP_ADD_LIBRARY(ssl, 1, MEMCACHED_SHARED_LIBADD)])
+        AC_DEFINE(HAVE_MEMCACHED_TLS, 1, [Have TLS support])
+      else
+        AC_MSG_ERROR([no, libmemcached built with TLS disabled. Run configure with --disable-memcached-tls or update libmemcached with TLS support])
       fi
     else
       AC_MSG_RESULT([no])

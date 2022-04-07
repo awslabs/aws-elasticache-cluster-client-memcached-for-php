@@ -116,6 +116,8 @@ class Memcached {
 
 	const HAVE_SASL;
 
+	const HAVE_TLS;
+
 	/**
 	 * Class options.
 	 */
@@ -385,4 +387,20 @@ class MemcachedException extends Exception {
 
 	function __construct( $errmsg = "", $errcode  = 0 ) {}
 
+}
+
+class MemcachedTLSContextConfig {
+    public $cert_file;                /* Cert file name */
+    public $key_file;                 /* Private key filename for cert_file */
+    public $key_file_pass;            /* Optional password for key_file */
+    public $ca_cert_file;
+    public $ca_cert_dir;
+    public $protocols;
+    public $ciphers;
+    public $ciphersuites;
+    public $prefer_server_ciphers;
+    public $session_caching;
+    public $session_cache_size;
+    public $session_cache_timeout;
+    public $skip_cert_verify;
 }
