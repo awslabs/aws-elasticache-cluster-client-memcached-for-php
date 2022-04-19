@@ -183,10 +183,6 @@ cat<<EOF > "${PHP_MEMCACHED_BUILD_DIR}/memcached-${PHP_MEMCACHED_VERSION}/tests/
     
 	define ('MEMC_SASL_USER', 'memcached');
 	define ('MEMC_SASL_PASS', 'test');
-
-
-	define ("MEMC_TLS_SERVER_HOST", "127.0.0.1");
-	define ("MEMC_TLS_SERVER_PORT", 11213);
 EOF
 }
 

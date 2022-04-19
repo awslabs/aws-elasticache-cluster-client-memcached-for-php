@@ -35,6 +35,12 @@ function memc_get_instance (array $opts = array (), $persistent_id = null)
 function memc_get_sasl_instance (array $opts = array (), $persistent_id = null)
 {
 	return memc_create_instance(MEMC_SASL_SERVER_HOST, MEMC_SASL_SERVER_PORT, $opts, $persistent_id);
+
+}
+
+function memc_get_tls_instance (array $opts = array (), $persistent_id = null)
+{
+	return memc_create_instance(MEMC_TLS_SERVER_HOST, MEMC_TLS_SERVER_PORT, $opts, $persistent_id);
 }
 
 function memc_run_test ($test_function, $options = array ())

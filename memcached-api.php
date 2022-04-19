@@ -91,7 +91,9 @@ class Memcached {
 
 	const OPT_DYNAMIC_POLLING_INTERVAL_SECS;
 
-        /**
+    const OPT_USE_TLS;
+
+    /**
          * Client mode parameters
          */
 	const STATIC_CLIENT_MODE;
@@ -381,6 +383,8 @@ class Memcached {
 
 	public function setEncodingKey( $key ) {}
 
+    public function createAndSetTLSContext( array $context_config ) {}
+
 }
 
 class MemcachedException extends Exception {
@@ -395,6 +399,7 @@ class MemcachedTLSContextConfig {
     public $key_file_pass;            /* Optional password for key_file */
     public $ca_cert_file;
     public $ca_cert_dir;
+    public $hostname;                 /* Required unless skip_hostname_verify/skip_cert_verify is set to true */
     public $protocols;
     public $ciphers;
     public $ciphersuites;
@@ -403,4 +408,5 @@ class MemcachedTLSContextConfig {
     public $session_cache_size;
     public $session_cache_timeout;
     public $skip_cert_verify;
+    public $skip_hostname_verify;
 }
