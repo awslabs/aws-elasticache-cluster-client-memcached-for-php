@@ -80,6 +80,12 @@ f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /e
 
 # To compile the client from source, do the following set of steps:
 
+### Prerequests libraries
+- OpenSSL >= 1.1.0 (unless TLS support is disabled by ./configure --disable-tls).
+- SASL (libsasl2, unless SASL support is disabled by ./configure --disable-sasl).
+- 
+### Compile the library
+
 a) Launch a Linux-based EC2 instance and install PHP 7.x along with its required dependencies.
 
 b) Checkout and compile the dependency package aws-elasticache-cluster-client-libmemcached via https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached
@@ -88,7 +94,15 @@ c) Run the following set of commands under the current directory:
 
 > phpize
 
-> ./configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
+> mkdir BUILD
+
+> cd BUILD
+
+> ../configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
+
+Alternately, if you are not using TLS, you can disable it by running:
+> ../configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl --disable-memcached-tls
+
 
 Note: If you want to enable igbinary support, checkout, compile, and install the upstream igbinary7 package https://github.com/igbinary/igbinary7, and append the option "--enable-memcached-igbinary" at the end of the "configure" command above.
 

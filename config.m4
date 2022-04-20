@@ -321,7 +321,7 @@ if test "$PHP_MEMCACHED" != "no"; then
     dnl # regardless of the option --enable-memcached-tls or --disable-memcached-tls
     AC_MSG_CHECKING([whether to enable TLS support])
     if test "$ac_cv_memc_tls_support" = "yes" && test "$ac_cv_have_memc_tls_h" = "no"; then
-      AC_MSG_ERROR([no, libmemcached built with TLS required, but openssl/ssh.h not found.])
+      AC_MSG_ERROR([no, libmemcached built with TLS required, but openssl/ssl.h not found.])
     fi
 
     if test "$PHP_MEMCACHED_TLS" != "no"; then
