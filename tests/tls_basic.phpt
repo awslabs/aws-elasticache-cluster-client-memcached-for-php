@@ -24,12 +24,15 @@ $m->setOption(Memcached::OPT_USE_TLS, 1);
 
 $m->createAndSetTLSContext((array)$obj);
 
+// Test basic use case of set get
 $m->set('key', 'value', 60);
 var_dump($m->get('key') == 'value');
 
+// Make sure we failed to get key when TLS is disabled
 $m->setOption(Memcached::OPT_USE_TLS, 0);
 var_dump($m->get('key') == 'value');
 
+// Test dynamically setting on/off TLS works
 $m->createAndSetTLSContext((array)$obj);
 $m->setOption(Memcached::OPT_USE_TLS, 1);
 var_dump($m->get('key') == 'value');

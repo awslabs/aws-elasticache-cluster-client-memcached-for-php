@@ -13,12 +13,11 @@ else {
 	//define ('MEMC_SASL_USER', 'memcached');
 	//define ('MEMC_SASL_PASS', 'test');
 
-    //define ("MEMC_TLS_SERVER_HOST", "127.0.0.1");
-    //define ("MEMC_TLS_SERVER_PORT", 11213);
+	define ("MEMC_TLS_SERVER_HOST", "127.0.0.1");
+	define ("MEMC_TLS_SERVER_PORT", 11213);
 
-    //define ("MEMC_TLS_CERT", "/path/to/memc.crt");
-    //define ("MEMC_TLS_KEY", "/path/to/memc.key");
-
+	//define ("MEMC_TLS_CERT", "/path/to/memc.crt");
+	//define ("MEMC_TLS_KEY", "/path/to/memc.key");
 }
 
 function memc_create_instance ($host, $port, array $opts = array (), $persistent_id = null)
@@ -48,8 +47,8 @@ function memc_get_sasl_instance (array $opts = array (), $persistent_id = null)
 function memc_get_tls_instance (array $opts = array (), $persistent_id = null)
 {
     $memcached = new Memcached($persistent_id);
-    $memcached->setOption(Memcached::OPT_CLIENT_MODE, Memcached::STATIC_CLIENT_MODE);
-    if ($memcached->setOptions ($opts) == false)
+    if (($memcached->setOption(Memcached::OPT_CLIENT_MODE, Memcached::STATIC_CLIENT_MODE) == false) ||
+        ($memcached->setOptions ($opts) == false))
         echo "Failed to set options" . PHP_EOL;
     $memcached->addServer(MEMC_TLS_SERVER_HOST, MEMC_TLS_SERVER_PORT);
     return $memcached;

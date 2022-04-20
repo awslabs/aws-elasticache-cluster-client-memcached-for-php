@@ -399,7 +399,7 @@ class MemcachedTLSContextConfig {
     public $key_file_pass;            /* Optional password for key_file */
     public $ca_cert_file;
     public $ca_cert_dir;
-    public $hostname;                 /* Required unless skip_hostname_verify/skip_cert_verify is set to true */
+    public $hostname;                 /* Required unless skip_hostname_verify is set to true */
     public $protocols;
     public $ciphers;
     public $ciphersuites;

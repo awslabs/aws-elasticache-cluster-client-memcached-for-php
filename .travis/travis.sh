@@ -31,7 +31,7 @@ function check_sasl_support() {
 }
 
 function check_tls_support() {
-    version_compare "$LIBMEMCACHED_VERSION" gt 1.0.15
+    version_compare "$LIBMEMCACHED_VERSION" gt 1.0.8
     if [ $? = 0 ]; then
         ENABLE_TLS=yes
     else
@@ -194,6 +194,9 @@ cat<<EOF > "${PHP_MEMCACHED_BUILD_DIR}/memcached-${PHP_MEMCACHED_VERSION}/tests/
 
 	define ("MEMC_TLS_SERVER_HOST", "127.0.0.1");
 	define ("MEMC_TLS_SERVER_PORT", 11213);
+
+	define ("MEMC_TLS_CERT", "");
+  define ("MEMC_TLS_KEY", "");
 EOF
 }
 
