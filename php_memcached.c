@@ -3400,15 +3400,12 @@ static PHP_METHOD(Memcached, createAndSetTLSContext)
             switch (Z_TYPE_P(zvalue)) {
                 case IS_TRUE:
                     *(int *)value = 1;
-                    fprintf(stderr, "Got configuration key %s with value %d\n", key, *(int*)value);
                     break;
                 case IS_FALSE:
                      *(int *)value = 0;
-                    fprintf(stderr, "Got configuration key %s with value %d\n", key, *(int*)value);
                     break;
                 case IS_LONG:
                      *(int *)value = *(int *)zvalue;
-                    fprintf(stderr, "Got configuration key %s with value %d\n", key, *(int*)value);
                     break;
                 case IS_STRING:
                     str = zval_get_string(zvalue);
@@ -3416,7 +3413,6 @@ static PHP_METHOD(Memcached, createAndSetTLSContext)
                         value = NULL;
                     } else {
                         value = COPY_STR(ZSTR_VAL(str));
-                        fprintf(stderr, "Got configuration key %s with value %s\n", key, value);
                     }
                     break;
                 default:
