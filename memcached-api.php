@@ -404,9 +404,6 @@ class MemcachedTLSContextConfig {
     public $ciphers;
     public $ciphersuites;
     public $prefer_server_ciphers;
-    public $session_caching;
-    public $session_cache_size;
-    public $session_cache_timeout;
     public $skip_cert_verify;
     public $skip_hostname_verify;
 }

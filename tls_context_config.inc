@@ -11,9 +11,6 @@ return (object) array(
     'ciphers' => NULL,
     'ciphersuites' => NULL,
     'prefer_server_ciphers' => NULL,
-    'session_caching' => NULL,
-    'session_cache_size' => NULL,
-    'session_cache_timeout' => NULL,
     'skip_cert_verify' => false,
     'skip_hostname_verify' => false,
 );

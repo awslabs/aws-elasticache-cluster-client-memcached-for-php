@@ -3007,15 +3007,6 @@ static int php_set_tls_context_configurations(memcached_ssl_context_config *conf
     else if(!strcmp(key, "prefer_server_ciphers")){
         config->prefer_server_ciphers = COPY_PTR_INT(value);
     }
-    else if(!strcmp(key, "session_caching")){
-        config->session_caching = COPY_PTR_INT(value);
-    }
-    else if(!strcmp(key, "session_cache_size")){
-        config->session_cache_size = COPY_PTR_INT(value);
-    }
-    else if(!strcmp(key, "session_cache_timeout")){
-        config->session_cache_timeout = COPY_PTR_INT(value);
-    }
     else if(!strcmp(key, "skip_cert_verify")){
         config->skip_cert_verify = COPY_PTR_INT(value);
     } else {
