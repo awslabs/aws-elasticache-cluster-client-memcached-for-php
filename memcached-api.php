@@ -393,17 +393,21 @@ class MemcachedException extends Exception {
 
 }
 
+/**
+ * TLS context configurations.
+ * The client's certificate and key file are only supported in PEM format.
+ */
 class MemcachedTLSContextConfig {
-    public $cert_file;                /* Cert file name */
-    public $key_file;                 /* Private key filename for cert_file */
-    public $key_file_pass;            /* Optional password for key_file */
-    public $ca_cert_file;
-    public $ca_cert_dir;
-    public $hostname;                 /* Required unless skip_hostname_verify is set to true */
-    public $protocols;
-    public $ciphers;
-    public $ciphersuites;
-    public $prefer_server_ciphers;
-    public $skip_cert_verify;
-    public $skip_hostname_verify;
+    public ?string $cert_file = null;                   /* Cert file name (PEM formatted) */
+    public ?string $key_file = null;                    /* Private key filename for cert_file (PEM formatted) */
+    public ?string $key_file_pass = null;               /* Optional password for key_file */
+    public ?string $ca_cert_file = null;
+    public ?string $ca_cert_dir = null;
+    public ?string $hostname = null;                    /* Required unless skip_hostname_verify is set to true */
+    public ?string $protocols = null;
+    public ?string $ciphers = null;
+    public ?string $ciphersuites = null;
+    public bool $prefer_server_ciphers = false; /* When choosing a cipher, use the server's preferences instead of the client preferences. */
+    public bool $skip_cert_verify = false;
+    public bool $skip_hostname_verify = false;
 }

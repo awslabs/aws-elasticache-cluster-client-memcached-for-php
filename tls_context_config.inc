@@ -10,7 +10,7 @@ return (object) array(
     'protocols' => NULL,
     'ciphers' => NULL,
     'ciphersuites' => NULL,
-    'prefer_server_ciphers' => NULL,
+    'prefer_server_ciphers' => false,
     'skip_cert_verify' => false,
     'skip_hostname_verify' => false,
 );

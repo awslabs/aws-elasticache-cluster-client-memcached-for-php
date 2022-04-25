@@ -19,6 +19,7 @@ $obj = new MemcachedTLSContextConfig();
 $obj->cert_file = MEMC_TLS_CERT;
 $obj->key_file = MEMC_TLS_KEY;
 $obj->skip_cert_verify = true;
+$obj->skip_hostname_verify = true;
 
 $m->setOption(Memcached::OPT_USE_TLS, 1);
 

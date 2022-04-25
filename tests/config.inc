@@ -47,9 +47,9 @@ function memc_get_sasl_instance (array $opts = array (), $persistent_id = null)
 function memc_get_tls_instance (array $opts = array (), $persistent_id = null)
 {
     $memcached = new Memcached($persistent_id);
-    if (($memcached->setOption(Memcached::OPT_CLIENT_MODE, Memcached::STATIC_CLIENT_MODE) == false) ||
-        ($memcached->setOptions ($opts) == false))
-        echo "Failed to set options" . PHP_EOL;
+    if ($memcached->setOptions ($opts) == false) {
+        echo "memc_get_tls_instance(): Failed to set options" . PHP_EOL;
+    }
     $memcached->addServer(MEMC_TLS_SERVER_HOST, MEMC_TLS_SERVER_PORT);
     return $memcached;
 }
