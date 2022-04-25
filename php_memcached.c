@@ -3005,8 +3005,8 @@ static zend_bool php_set_tls_context_configurations(memcached_ssl_context_config
     else if(!strcmp(key, "ca_cert_dir")){
         config->ca_cert_dir =  COPY_STR(value);
     }
-    else if(!strcmp(key, "protocols")){
-        config->protocols =  COPY_STR(value);
+    else if(!strcmp(key, "protocol")){
+        config->protocol =  COPY_STR(value);
     }
     else if(!strcmp(key, "hostname")){
         config->hostname =  COPY_STR(value);

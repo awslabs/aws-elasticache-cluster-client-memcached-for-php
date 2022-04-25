@@ -404,10 +404,12 @@ class MemcachedTLSContextConfig {
     public ?string $ca_cert_file = null;
     public ?string $ca_cert_dir = null;
     public ?string $hostname = null;                    /* Required unless skip_hostname_verify is set to true */
-    public ?string $protocols = null;
+    public ?string $protocol = null;                   /* Enable only one of the TLS protocols: "TLSv1.2" or "TLSv1.3".
+                                                           By default, both v1.2 and v1.3 are enabled. */
     public ?string $ciphers = null;
     public ?string $ciphersuites = null;
-    public bool $prefer_server_ciphers = false; /* When choosing a cipher, use the server's preferences instead of the client preferences. */
+    public bool $prefer_server_ciphers = false;         /* When choosing a cipher, use the server's preferences instead
+                                                           of the client preferences. */
     public bool $skip_cert_verify = false;
     public bool $skip_hostname_verify = false;
 }

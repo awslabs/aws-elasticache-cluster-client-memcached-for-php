@@ -7,7 +7,7 @@ return (object) array(
     'ca_cert_file' => NULL,
     'ca_cert_dir' => NULL,
     'hostname' => NULL,         /* Required unless skip_hostname_verify is set to true */
-    'protocols' => NULL,
+    'protocol' => NULL,
     'ciphers' => NULL,
     'ciphersuites' => NULL,
     'prefer_server_ciphers' => false,
