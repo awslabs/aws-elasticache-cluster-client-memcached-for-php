@@ -18,6 +18,7 @@ else {
 
 	//define ("MEMC_TLS_CERT", "/path/to/memc.crt");
 	//define ("MEMC_TLS_KEY", "/path/to/memc.key");
+	//define ("MEMC_TLS_CA_FILE", "/path/to/ca.crt");
 }
 
 function memc_create_instance ($host, $port, array $opts = array (), $persistent_id = null)

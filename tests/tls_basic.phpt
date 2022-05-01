@@ -18,6 +18,7 @@ $m = memc_get_tls_instance();
 $obj = new MemcachedTLSContextConfig();
 $obj->cert_file = MEMC_TLS_CERT;
 $obj->key_file = MEMC_TLS_KEY;
+$obj->ca_cert_file = defined('MEMC_TLS_CA_FILE') ? MEMC_TLS_CA_FILE : null;
 $obj->skip_cert_verify = true;
 $obj->skip_hostname_verify = true;
 

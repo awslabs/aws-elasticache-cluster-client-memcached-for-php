@@ -392,7 +392,22 @@ PHP_INI_BEGIN()
 	MEMC_SESSION_INI_ENTRY("sasl_password",          "",           OnUpdateString,         sasl_password)
 	MEMC_SESSION_INI_BOOL ("persistent",             "0",          OnUpdateBool,           persistent_enabled)
 	MEMC_SESSION_INI_ENTRY("prefix",                 "memc.sess.key.", OnUpdateSessionPrefixString,         prefix)
-	
+
+#if defined(HAVE_MEMCACHED_TLS)
+    MEMC_SESSION_INI_BOOL ("use_tls",                "0",          OnUpdateBool,           tls_enabled)
+    MEMC_SESSION_INI_ENTRY("tls_cert_file",           "",          OnUpdateString,         tls_cert_file)
+    MEMC_SESSION_INI_ENTRY("tls_key_file",            "",          OnUpdateString,         tls_key_file)
+    MEMC_SESSION_INI_ENTRY("tls_key_file_pass",       "",          OnUpdateString,         tls_key_file_pass)
+    MEMC_SESSION_INI_ENTRY("tls_ca_cert_file",        "",          OnUpdateString,         tls_ca_cert_file)
+    MEMC_SESSION_INI_ENTRY("tls_ca_cert_dir",         "",          OnUpdateString,         tls_ca_cert_dir)
+    MEMC_SESSION_INI_ENTRY("tls_hostname",            "",          OnUpdateString,         tls_hostname)
+    MEMC_SESSION_INI_ENTRY("tls_protocol",            "",          OnUpdateString,         tls_protocol)
+    MEMC_SESSION_INI_ENTRY("tls_ciphers",             "",          OnUpdateString,         tls_ciphers)
+    MEMC_SESSION_INI_ENTRY("tls_ciphersuites",        "",          OnUpdateString,         tls_ciphersuites)
+	MEMC_SESSION_INI_BOOL("tls_prefer_server_ciphers","0",         OnUpdateBool,           tls_prefer_server_ciphers)
+	MEMC_SESSION_INI_BOOL("tls_skip_cert_verify",         "0",     OnUpdateBool,           tls_skip_cert_verify)
+	MEMC_SESSION_INI_BOOL("tls_skip_hostname_verify",     "0",     OnUpdateBool,           tls_skip_hostname_verify)
+#endif
 	/* Deprecated */
 	STD_PHP_INI_ENTRY("memcached.sess_lock_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
 	STD_PHP_INI_ENTRY("memcached.sess_lock_max_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
@@ -407,6 +422,7 @@ PHP_INI_BEGIN()
 
 	MEMC_INI_BOOL ("default_consistent_hash",       "0", OnUpdateBool,       default_behavior.consistent_hash_enabled)
 	MEMC_INI_BOOL ("default_binary_protocol",       "0", OnUpdateBool,       default_behavior.binary_protocol_enabled)
+	MEMC_INI_BOOL ("default_use_tls",               "0", OnUpdateBool,       default_behavior.tls_enabled)
 	MEMC_INI_LINK ("default_connect_timeout",       "0", OnUpdateLong,       default_behavior.connect_timeout)
 
 PHP_INI_END()
@@ -1300,6 +1316,14 @@ static PHP_METHOD(Memcached, __construct)
 		}
 	}
 
+#ifdef HAVE_MEMCACHED_TLS
+	if (MEMC_G(default_behavior.tls_enabled)) {
+		memcached_return rc = memcached_behavior_set(intern->memc, MEMCACHED_BEHAVIOR_USE_TLS, 1);
+		if (rc != MEMCACHED_SUCCESS) {
+			php_error_docref(NULL, E_WARNING, "Failed to turn on TLS: %s", memcached_strerror(intern->memc, rc));
+		}
+	}
+#endif
 	if (MEMC_G(default_behavior.connect_timeout)) {
 		memcached_return rc = memcached_behavior_set(intern->memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, MEMC_G(default_behavior.connect_timeout));
 		if (rc != MEMCACHED_SUCCESS) {
@@ -3424,7 +3448,7 @@ static PHP_METHOD(Memcached, createAndSetTLSContext)
                     }
                     break;
                 default:
-                    php_error_docref(NULL, E_ERROR, "Got invalid TLS context configuration value");
+                    php_error_docref(NULL, E_ERROR, "Got invalid TLS context configuration value for key: %s", key);
                     RETURN_FALSE;
                 }
             if (!php_set_tls_context_configurations(&config, key, value)) {
@@ -4428,6 +4452,21 @@ PHP_GINIT_FUNCTION(php_memcached)
 	php_memcached_globals->session.lock_retries = 200;
 	php_memcached_globals->session.lock_expiration = 30;
 	php_memcached_globals->session.binary_protocol_enabled = 1;
+#ifdef HAVE_MEMCACHED_TLS
+	php_memcached_globals->session.tls_enabled = 0;
+	php_memcached_globals->session.tls_cert_file = NULL;
+	php_memcached_globals->session.tls_key_file = NULL;
+	php_memcached_globals->session.tls_key_file_pass = NULL;
+	php_memcached_globals->session.tls_ca_cert_file = NULL;
+	php_memcached_globals->session.tls_ca_cert_dir = NULL;
+	php_memcached_globals->session.tls_hostname = NULL;
+	php_memcached_globals->session.tls_protocol = NULL;
+	php_memcached_globals->session.tls_ciphers = NULL;
+	php_memcached_globals->session.tls_ciphersuites = NULL;
+	php_memcached_globals->session.tls_prefer_server_ciphers = 0;
+	php_memcached_globals->session.tls_skip_cert_verify = 0;
+	php_memcached_globals->session.tls_skip_hostname_verify = 0;
+#endif
 	php_memcached_globals->session.consistent_hash_enabled = 1;
 	php_memcached_globals->session.consistent_hash_type = MEMCACHED_BEHAVIOR_KETAMA;
 	php_memcached_globals->session.consistent_hash_name = NULL;
@@ -4456,6 +4495,9 @@ PHP_GINIT_FUNCTION(php_memcached)
 	/* Defaults for certain options */
 	php_memcached_globals->memc.default_behavior.consistent_hash_enabled = 0;
 	php_memcached_globals->memc.default_behavior.binary_protocol_enabled = 0;
+#ifdef HAVE_MEMCACHED_TLS
+	php_memcached_globals->memc.default_behavior.tls_enabled = 0;
+#endif
 	php_memcached_globals->memc.default_behavior.connect_timeout         = 0;
 }
 

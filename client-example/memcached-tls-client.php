@@ -33,7 +33,7 @@ $tls_config->hostname = '*.example.use1.cache.amazonaws.com';
 $tls_config->skip_cert_verify = false;
 $tls_config->skip_hostname_verify = false;
 
-/* pass the configurations in order to create OpenSSL's SSL_CTX and to set it to your client.
+/* pass the TLS configurations in order to create OpenSSL's SSL_CTX and to set it to your client.
 * note: all the client's servers will be configured with these TLS context configurations. */
 $tls_client->createAndSetTLSContext((array)$tls_config);
 
