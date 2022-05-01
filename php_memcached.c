@@ -422,8 +422,10 @@ PHP_INI_BEGIN()
 
 	MEMC_INI_BOOL ("default_consistent_hash",       "0", OnUpdateBool,       default_behavior.consistent_hash_enabled)
 	MEMC_INI_BOOL ("default_binary_protocol",       "0", OnUpdateBool,       default_behavior.binary_protocol_enabled)
-	MEMC_INI_BOOL ("default_use_tls",               "0", OnUpdateBool,       default_behavior.tls_enabled)
 	MEMC_INI_LINK ("default_connect_timeout",       "0", OnUpdateLong,       default_behavior.connect_timeout)
+#if defined(HAVE_MEMCACHED_TLS)
+	MEMC_INI_BOOL ("default_use_tls",               "0", OnUpdateBool,       default_behavior.tls_enabled)
+#endif
 
 PHP_INI_END()
 /* }}} */

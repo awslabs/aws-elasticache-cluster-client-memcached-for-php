@@ -196,7 +196,8 @@ cat<<EOF > "${PHP_MEMCACHED_BUILD_DIR}/memcached-${PHP_MEMCACHED_VERSION}/tests/
 	define ("MEMC_TLS_SERVER_PORT", 11213);
 
 	define ("MEMC_TLS_CERT", "");
-  define ("MEMC_TLS_KEY", "");
+	define ("MEMC_TLS_KEY", "");
+	define ("MEMC_TLS_CA_FILE", "");
 EOF
 }
 
