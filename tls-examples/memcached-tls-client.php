@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sample PHP code to show how to create a TLS client.
+ * Sample PHP code to show how to create a TLS Memcached client.
  */
 
 /* Configuration endpoint to use to initialize memcached client.
