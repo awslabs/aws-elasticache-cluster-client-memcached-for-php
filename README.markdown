@@ -92,7 +92,6 @@ f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /e
 g) If you downloaded ElastiCache Cluster Client with PHP 7.4, install OpenSSL 1.1.x. 
 Installation instructions for OpenSSL 1.1.1:
 
-g.1) 
 > sudo yum -y update
 
 > sudo yum install -y make gcc perl-core pcre-devel wget zlib-devel
