@@ -4,9 +4,9 @@ Amazon ElastiCache Cluster Client is used to connect to ElastiCache for Memcache
 
 This client library is released under the [Apache 2.0 License](http://aws.amazon.com/apache-2-0/).
 
-# To install from pre-compiled client artifact on 64-bit Linux, please follow the steps below:
+## To install from pre-compiled client artifact on 64-bit Linux, please follow the steps below:
 
---- Ubuntu 14.04 AMI ---
+### Ubuntu 22.04 AMI 
 
 a) Launch a new instance from the AMI
 
@@ -14,17 +14,44 @@ b) Run the following commands
 
 > sudo apt-get update
 
-> sudo apt-get install gcc g++
+> sudo apt-get install gcc g++ make
 
-c) Install PHP 7.x
+c) Install PHP 7.x. Installation instructions for PHP 7.4:
 
-d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console
+> sudo apt -y install software-properties-common
 
-e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into /usr/lib/php/20151012
+> sudo add-apt-repository ppa:ondrej/php
 
-f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php/7.0/cli/php.ini
+> sudo apt-get update
 
---- Amazon Linux 2 / Amazon Linux 201803 AMI ---
+> sudo apt -y install php7.4
+
+d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console.
+
+e) With root permission, copy the extracted artifact file amazon-elasticache-cluster-client.so into the php extension directory /usr/lib/php/20190902. In case this extension dir does not exist, you can find it by running:
+
+> php -i | grep extension_dir 
+
+f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php/7.4/cli/php.ini (change "7.4" to the PHP version you have)
+
+g) If you downloaded ElastiCache Cluster Client with PHP 7.4, install OpenSSL 1.1.x.
+
+> wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz
+
+> tar xvf openssl-1.1.1c.tar.gz
+
+> cd openssl-1.1.1c
+
+> ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)'
+
+> make
+
+> sudo make install
+
+> sudo ln -s /usr/local/lib/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/libssl.so.1.1
+
+
+### Amazon Linux 2 AMI 
 
 a) Launch a new instance from the AMI
 
@@ -62,15 +89,45 @@ e) With root permission, copy the extracted artifact file amazon-elasticache-clu
 
 f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php.ini
 
---- SUSE Linux AMI ---
+g) If you downloaded ElastiCache Cluster Client with PHP 7.4, install OpenSSL 1.1.x. 
+Installation instructions for OpenSSL 1.1.1:
+
+g.1) 
+> sudo yum -y update
+
+> sudo yum install -y make gcc perl-core pcre-devel wget zlib-devel
+
+> wget https://www.openssl.org/source/openssl-1.1.1c.tar.gz
+
+> tar xvf openssl-1.1.1c.tar.gz
+
+> cd openssl-1.1.1c
+
+> ./config -Wl,--enable-new-dtags,-rpath,'$(LIBRPATH)'
+
+> make
+
+> sudo make install
+
+> sudo ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1
+
+### SUSE Linux 15 AMI 
 
 a) Launch a new instance from the AMI
 
 b) Run the following command
 
+> sudo zypper refresh
+
+> sudo zypper update -y
+
 > sudo zypper install gcc
 
 c) Install PHP 7.x
+
+> sudo zypper addrepo http://download.opensuse.org/repositories/devel:/languages:/php/openSUSE_Leap_15.3/ php
+
+> sudo zypper install php7 
 
 d) Download and unzip Amazon ElastiCache Cluster Client from AWS ElastiCache Management Console
 
@@ -78,7 +135,7 @@ e) With root permission, copy the extracted artifact file amazon-elasticache-clu
 
 f) Insert the line "extension=amazon-elasticache-cluster-client.so" into file /etc/php7/cli/php.ini
 
-# To compile the client from source, do the following set of steps:
+## To compile the client from source, do the following set of steps:
 
 ### Prerequests libraries
 - OpenSSL >= 1.1.0 (unless TLS support is disabled by ./configure --disable-tls).
@@ -99,6 +156,9 @@ c) Run the following set of commands under the current directory:
 > cd BUILD
 
 > ../configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
+
+If running ../configure fails to find *libssl* (OpenSSL library) it may be necessary to tweak the PKG_CONFIG_PATH environment variable:
+> PKG_CONFIG_PATH=/path/to/ssl/lib/pkgconfig ../configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl
 
 Alternately, if you are not using TLS, you can disable it by running:
 > ../configure --with-libmemcached-dir=&lt;path to libmemcached build directory&gt; --disable-memcached-sasl --disable-memcached-tls
