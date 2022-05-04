@@ -3526,6 +3526,11 @@ memcached_return s_server_cursor_list_servers_cb(const memcached_st *ptr, php_me
 
 	array_init(&array);
 	add_assoc_string(&array, "host", (char*)memcached_server_name(instance));
+
+	if (has_memcached_instance_ipaddress(instance)) {
+ 		add_assoc_string(&array, "ipaddress", (char*)memcached_server_ipaddress(instance));
+ 	}
+
 	add_assoc_long(&array,   "port", memcached_server_port(instance));
 	add_assoc_string(&array, "type", (char*)memcached_server_type(instance));
 	/*
