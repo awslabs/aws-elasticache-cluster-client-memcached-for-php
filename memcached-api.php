@@ -91,7 +91,7 @@ class Memcached {
 
 	const OPT_DYNAMIC_POLLING_INTERVAL_SECS;
 
-    const OPT_USE_TLS;
+	const OPT_USE_TLS;
 
     /**
          * Client mode parameters
@@ -383,7 +383,7 @@ class Memcached {
 
 	public function setEncodingKey( $key ) {}
 
-    public function createAndSetTLSContext( array $context_config ) {}
+	public function createAndSetTLSContext( array $context_config ) {}
 
 }
 
