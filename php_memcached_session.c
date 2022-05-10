@@ -195,6 +195,32 @@ zend_bool s_configure_from_ini_values(memcached_st *memc, zend_bool silent)
 		check_set_behavior(MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
 	}
 
+#ifdef HAVE_MEMCACHED_TLS
+	if (MEMC_SESS_INI(tls_enabled)) {
+		check_set_behavior(MEMCACHED_BEHAVIOR_USE_TLS, 1);
+        memcached_ssl_context_config config = {};
+        config.cert_file = MEMC_SESS_STR_INI(tls_cert_file);
+        config.key_file = MEMC_SESS_STR_INI(tls_key_file);
+        config.key_file_pass = MEMC_SESS_STR_INI(tls_key_file_pass);
+        config.ca_cert_file = MEMC_SESS_STR_INI(tls_ca_cert_file);
+        config.ca_cert_dir = MEMC_SESS_STR_INI(tls_ca_cert_dir);
+        config.hostname = MEMC_SESS_STR_INI(tls_hostname);
+        config.protocol = MEMC_SESS_STR_INI(tls_protocol);
+        config.ciphers = MEMC_SESS_STR_INI(tls_ciphers);
+        config.ciphersuites = MEMC_SESS_STR_INI(tls_ciphersuites);
+        config.prefer_server_ciphers = MEMC_SESS_INI(tls_prefer_server_ciphers);
+        config.skip_cert_verify = MEMC_SESS_INI(tls_skip_cert_verify);
+        config.skip_hostname_verify = MEMC_SESS_INI(tls_skip_hostname_verify);
+        memc_ssl_context_error error;
+        if ((error = memcached_create_and_set_ssl_context(memc, &config)) != MEMCACHED_SSL_CTX_SUCCESS) {
+            if (!silent) {
+            php_error_docref(NULL, E_ERROR, "Failed to create/set TLS context with session memcached configuration: %s",
+                             memcached_ssl_context_get_error(error));
+            }
+            return 0;
+        }
+	}
+#endif
 	if (MEMC_SESS_INI(consistent_hash_enabled)) {
 		check_set_behavior(MEMC_SESS_INI(consistent_hash_type), 1);
 	}
@@ -521,7 +547,9 @@ PS_CREATE_SID_FUNC(memcached)
 
 			if (memcached_add (memc, sid->val, sid->len, NULL, 0, s_lock_expiration(), 0) == MEMCACHED_SUCCESS) {
 				break;
-			}
+			} else {
+			    php_error_docref(NULL, E_WARNING, "Error creating sid: %s", memcached_last_error_message(memc));
+            }
 			zend_string_release(sid);
 			sid = NULL;
 		}

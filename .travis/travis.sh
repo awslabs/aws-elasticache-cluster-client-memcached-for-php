@@ -30,6 +30,15 @@ function check_sasl_support() {
     fi
 }
 
+function check_tls_support() {
+    version_compare "$LIBMEMCACHED_VERSION" gt 1.0.8
+    if [ $? = 0 ]; then
+        ENABLE_TLS=yes
+    else
+        ENABLE_TLS=no
+    fi
+}
+
 function validate_package_xml() {
     retval=0
     for file in tests/*.phpt; do
@@ -151,8 +160,13 @@ function build_php_memcached() {
             sasl_flag="--enable-memcached-sasl"
         fi
 
+        local tls_flag="--disable-memcached-tls"
+        if test "x$ENABLE_TLS" = "xyes"; then
+            tls_flag="--enable-memcached-tls"
+        fi
+
         # ./configure --with-libmemcached-dir="$LIBMEMCACHED_PREFIX" $protocol_flag $sasl_flag 
-        ./configure --with-libmemcached-dir="$LIBMEMCACHED_PREFIX" $protocol_flag $sasl_flag --enable-memcached-json --enable-memcached-msgpack --enable-memcached-igbinary
+        ./configure --with-libmemcached-dir="$LIBMEMCACHED_PREFIX" $protocol_flag $sasl_flag $tls_flag --enable-memcached-json --enable-memcached-msgpack --enable-memcached-igbinary
         make
         make install
     popd
@@ -169,6 +183,21 @@ cat<<EOF > "${PHP_MEMCACHED_BUILD_DIR}/memcached-${PHP_MEMCACHED_VERSION}/tests/
     
 	define ('MEMC_SASL_USER', 'memcached');
 	define ('MEMC_SASL_PASS', 'test');
+EOF
+}
+
+function create_memcached_tls_test_configuration() {
+cat<<EOF > "${PHP_MEMCACHED_BUILD_DIR}/memcached-${PHP_MEMCACHED_VERSION}/tests/config.inc.local"
+<?php
+	define ("MEMC_SERVER_HOST", "127.0.0.1");
+	define ("MEMC_SERVER_PORT", 11211);
+
+	define ("MEMC_TLS_SERVER_HOST", "127.0.0.1");
+	define ("MEMC_TLS_SERVER_PORT", 11213);
+
+	define ("MEMC_TLS_CERT", "");
+	define ("MEMC_TLS_KEY", "");
+	define ("MEMC_TLS_CA_FILE", "");
 EOF
 }
 
@@ -223,6 +252,7 @@ check_sasl_support
 
 echo "Enable protocol: $ENABLE_PROTOOCOL"
 echo "Enable sasl: $ENABLE_SASL"
+echo "Enable tls: $ENABLE_TLS"
 
 set -e
 
@@ -251,6 +281,11 @@ case $ACTION in
         # Create configuration
         if test "x$ENABLE_SASL" = "xyes"; then
             create_memcached_test_configuration
+        fi
+
+        # Create configuration
+        if test "x$ENABLE_TLS" = "xyes"; then
+            create_memcached_tls_test_configuration
         fi
 
         # Run tests

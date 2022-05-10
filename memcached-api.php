@@ -91,7 +91,9 @@ class Memcached {
 
 	const OPT_DYNAMIC_POLLING_INTERVAL_SECS;
 
-        /**
+	const OPT_USE_TLS;
+
+    /**
          * Client mode parameters
          */
 	const STATIC_CLIENT_MODE;
@@ -115,6 +117,8 @@ class Memcached {
 	const HAVE_SESSION;
 
 	const HAVE_SASL;
+
+	const HAVE_TLS;
 
 	/**
 	 * Class options.
@@ -379,10 +383,33 @@ class Memcached {
 
 	public function setEncodingKey( $key ) {}
 
+	public function createAndSetTLSContext( array $context_config ) {}
+
 }
 
 class MemcachedException extends Exception {
 
 	function __construct( $errmsg = "", $errcode  = 0 ) {}
 
+}
+
+/**
+ * TLS context configurations.
+ * The client's certificate and key file are only supported in PEM format.
+ */
+class MemcachedTLSContextConfig {
+    public ?string $cert_file = null;                   /* Cert file name (PEM formatted) */
+    public ?string $key_file = null;                    /* Private key filename for cert_file (PEM formatted) */
+    public ?string $key_file_pass = null;               /* Optional password for key_file */
+    public ?string $ca_cert_file = null;
+    public ?string $ca_cert_dir = null;
+    public ?string $hostname = null;                    /* Required unless skip_hostname_verify is set to true */
+    public ?string $protocol = null;                   /* Enable only one of the TLS protocols: "TLSv1.2" or "TLSv1.3".
+                                                           By default, both v1.2 and v1.3 are enabled. */
+    public ?string $ciphers = null;
+    public ?string $ciphersuites = null;
+    public bool $prefer_server_ciphers = false;         /* When choosing a cipher, use the server's preferences instead
+                                                           of the client preferences. */
+    public bool $skip_cert_verify = false;
+    public bool $skip_hostname_verify = false;
 }

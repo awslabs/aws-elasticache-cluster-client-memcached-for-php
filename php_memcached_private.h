@@ -173,6 +173,22 @@ ZEND_BEGIN_MODULE_GLOBALS(php_memcached)
 
 		char *sasl_username;
 		char *sasl_password;
+
+#ifdef HAVE_MEMCACHED_TLS
+        zend_bool tls_enabled;
+        char *tls_cert_file;
+        char *tls_key_file;
+        char *tls_key_file_pass;
+        char *tls_ca_cert_file;
+        char *tls_ca_cert_dir;
+        char *tls_hostname;
+        char *tls_protocol;
+        char *tls_ciphers;
+        char *tls_ciphersuites;
+        zend_bool *tls_prefer_server_ciphers;
+        zend_bool *tls_skip_cert_verify;
+        zend_bool *tls_skip_hostname_verify;
+#endif
 	} session;
 #endif
 
@@ -195,7 +211,9 @@ ZEND_BEGIN_MODULE_GLOBALS(php_memcached)
 			zend_bool consistent_hash_enabled;
 			zend_bool binary_protocol_enabled;
 			zend_long connect_timeout;
-
+#ifdef HAVE_MEMCACHED_TLS
+            zend_bool tls_enabled;
+#endif
 		} default_behavior;
 
 	} memc;

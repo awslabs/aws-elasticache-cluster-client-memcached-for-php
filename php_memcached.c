@@ -128,7 +128,8 @@ static int php_memc_list_entry(void) {
   Helper macros
 ****************************************/
 #define RETURN_FROM_GET RETURN_FALSE
-
+#define COPY_STR(value)                          strdup((char *)value)
+#define COPY_PTR_INT(value)                      *((int *)value)
 /****************************************
   Structures and definitions
 ****************************************/
@@ -249,6 +250,7 @@ static zend_class_entry *memcached_server_ce = NULL;
 
 static zend_class_entry *memcached_ce = NULL;
 static zend_class_entry *memcached_exception_ce = NULL;
+static zend_class_entry *memcached_tls_context_config_ce = NULL;
 static zend_object_handlers memcached_object_handlers;
 
 #ifdef HAVE_SPL
@@ -390,7 +392,22 @@ PHP_INI_BEGIN()
 	MEMC_SESSION_INI_ENTRY("sasl_password",          "",           OnUpdateString,         sasl_password)
 	MEMC_SESSION_INI_BOOL ("persistent",             "0",          OnUpdateBool,           persistent_enabled)
 	MEMC_SESSION_INI_ENTRY("prefix",                 "memc.sess.key.", OnUpdateSessionPrefixString,         prefix)
-	
+
+#if defined(HAVE_MEMCACHED_TLS)
+	MEMC_SESSION_INI_BOOL ("use_tls",                "0",          OnUpdateBool,           tls_enabled)
+	MEMC_SESSION_INI_ENTRY("tls_cert_file",           "",          OnUpdateString,         tls_cert_file)
+	MEMC_SESSION_INI_ENTRY("tls_key_file",            "",          OnUpdateString,         tls_key_file)
+	MEMC_SESSION_INI_ENTRY("tls_key_file_pass",       "",          OnUpdateString,         tls_key_file_pass)
+	MEMC_SESSION_INI_ENTRY("tls_ca_cert_file",        "",          OnUpdateString,         tls_ca_cert_file)
+	MEMC_SESSION_INI_ENTRY("tls_ca_cert_dir",         "",          OnUpdateString,         tls_ca_cert_dir)
+	MEMC_SESSION_INI_ENTRY("tls_hostname",            "",          OnUpdateString,         tls_hostname)
+	MEMC_SESSION_INI_ENTRY("tls_protocol",            "",          OnUpdateString,         tls_protocol)
+	MEMC_SESSION_INI_ENTRY("tls_ciphers",             "",          OnUpdateString,         tls_ciphers)
+	MEMC_SESSION_INI_ENTRY("tls_ciphersuites",        "",          OnUpdateString,         tls_ciphersuites)
+	MEMC_SESSION_INI_BOOL("tls_prefer_server_ciphers","0",         OnUpdateBool,           tls_prefer_server_ciphers)
+	MEMC_SESSION_INI_BOOL("tls_skip_cert_verify",         "0",     OnUpdateBool,           tls_skip_cert_verify)
+	MEMC_SESSION_INI_BOOL("tls_skip_hostname_verify",     "0",     OnUpdateBool,           tls_skip_hostname_verify)
+#endif
 	/* Deprecated */
 	STD_PHP_INI_ENTRY("memcached.sess_lock_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
 	STD_PHP_INI_ENTRY("memcached.sess_lock_max_wait", "not set", PHP_INI_ALL, OnUpdateDeprecatedLockValue, no_effect, zend_php_memcached_globals, php_memcached_globals)
@@ -406,6 +423,9 @@ PHP_INI_BEGIN()
 	MEMC_INI_BOOL ("default_consistent_hash",       "0", OnUpdateBool,       default_behavior.consistent_hash_enabled)
 	MEMC_INI_BOOL ("default_binary_protocol",       "0", OnUpdateBool,       default_behavior.binary_protocol_enabled)
 	MEMC_INI_LINK ("default_connect_timeout",       "0", OnUpdateLong,       default_behavior.connect_timeout)
+#if defined(HAVE_MEMCACHED_TLS)
+	MEMC_INI_BOOL ("default_use_tls",               "0", OnUpdateBool,       default_behavior.tls_enabled)
+#endif
 
 PHP_INI_END()
 /* }}} */
@@ -1100,6 +1120,14 @@ zend_bool s_should_retry_write (php_memc_object_t *intern, memcached_return stat
 		return 0;
 	}
 
+#ifdef HAVE_MEMCACHED_TLS
+    if (status == MEMCACHED_TLS_CONNECTION_ERROR) {
+        // Most TLS connection errors cannot be resolved on their own (e.g. verification issues).
+        // We would skip retrying and bubble up the error to the user.
+        return 0;
+    }
+#endif
+
 	return s_memcached_return_is_error (status, 1);
 }
 
@@ -1290,6 +1318,14 @@ static PHP_METHOD(Memcached, __construct)
 		}
 	}
 
+#ifdef HAVE_MEMCACHED_TLS
+	if (MEMC_G(default_behavior.tls_enabled)) {
+		memcached_return rc = memcached_behavior_set(intern->memc, MEMCACHED_BEHAVIOR_USE_TLS, 1);
+		if (rc != MEMCACHED_SUCCESS) {
+			php_error_docref(NULL, E_WARNING, "Failed to turn on TLS: %s", memcached_strerror(intern->memc, rc));
+		}
+	}
+#endif
 	if (MEMC_G(default_behavior.connect_timeout)) {
 		memcached_return rc = memcached_behavior_set(intern->memc, MEMCACHED_BEHAVIOR_CONNECT_TIMEOUT, MEMC_G(default_behavior.connect_timeout));
 		if (rc != MEMCACHED_SUCCESS) {
@@ -2977,6 +3013,52 @@ static PHP_METHOD(Memcached, getOption)
 }
 /* }}} */
 
+#ifdef HAVE_MEMCACHED_TLS
+static zend_bool php_set_tls_context_configurations(memcached_ssl_context_config *config, const char *key, const void *value){
+    zend_bool ok = 1;
+    if (!strcmp(key, "cert_file")) {
+        config->cert_file = COPY_STR(value);
+    }
+    else if(!strcmp(key, "key_file")){
+        config->key_file = COPY_STR(value);
+    }
+    else if(!strcmp(key, "key_file_pass")){
+        config->key_file_pass =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "ca_cert_file")){
+        config->ca_cert_file =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "ca_cert_dir")){
+        config->ca_cert_dir =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "protocol")){
+        config->protocol =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "hostname")){
+        config->hostname =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "ciphers")){
+        config->ciphers =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "ciphersuites")){
+        config->ciphersuites =  COPY_STR(value);
+    }
+    else if(!strcmp(key, "prefer_server_ciphers")){
+        config->prefer_server_ciphers = COPY_PTR_INT(value);
+    }
+    else if(!strcmp(key, "skip_cert_verify")){
+        config->skip_cert_verify = COPY_PTR_INT(value);
+    }
+    else if(!strcmp(key, "skip_hostname_verify")){
+        config->skip_hostname_verify = COPY_PTR_INT(value);
+    } else {
+        php_error_docref(NULL, E_WARNING, "Got invalid TLS context configuration key: %s", key);
+        ok = 0;
+    }
+    return ok;
+}
+#endif
+
 static
 int php_memc_set_option(php_memc_object_t *intern, long option, zval *value)
 {
@@ -3317,6 +3399,82 @@ static PHP_METHOD(Memcached, setSaslAuthData)
 }
 /* }}} */
 #endif /* HAVE_MEMCACHED_SASL */
+
+/* {{{ Memcached::createAndSetTLSContext(array context_config)
+   Sets TLS context configurations */
+static PHP_METHOD(Memcached, createAndSetTLSContext)
+{
+#ifdef HAVE_MEMCACHED_TLS
+	zval *context_config;
+	zend_string *zkey;
+	zval *zvalue;
+	char *key;
+	memcached_ssl_context_config config = {};
+	memcached_return rc;
+	memc_ssl_context_error error;
+
+	MEMC_METHOD_INIT_VARS;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+	        Z_PARAM_ARRAY(context_config)
+	ZEND_PARSE_PARAMETERS_END();
+
+	MEMC_METHOD_FETCH_OBJECT;
+
+    // Iterate through each configuration key cast its value type and set it to
+    // the TLS context configurations object (config)
+	ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(context_config), zkey, zvalue) {
+		if (zkey == NULL) {
+			php_error_docref(NULL, E_WARNING, "invalid TLS context configuration. Configuration keys must be strings");
+			RETURN_FALSE;
+		} else {
+		    void *value;
+            zend_string *str = NULL;
+            key = ZSTR_VAL(zkey);
+            switch (Z_TYPE_P(zvalue)) {
+                case IS_TRUE:
+                    *(int *)value = 1;
+                    break;
+                case IS_FALSE:
+                     *(int *)value = 0;
+                    break;
+                case IS_LONG:
+                     *(int *)value = *(int *)zvalue;
+                    break;
+                case IS_STRING:
+                    str = zval_get_string(zvalue);
+                    if (ZSTR_LEN(str) == 0) {
+                        value = NULL;
+                    } else {
+                        value = COPY_STR(ZSTR_VAL(str));
+                    }
+                    break;
+                default:
+                    php_error_docref(NULL, E_ERROR, "Got invalid TLS context configuration value for key: %s", key);
+                    RETURN_FALSE;
+                }
+            if (!php_set_tls_context_configurations(&config, key, value)) {
+                RETURN_FALSE;
+            }
+		}
+	} ZEND_HASH_FOREACH_END();
+
+    // Create and set SSL context to the memcached client
+    error = memcached_create_and_set_ssl_context(intern->memc, &config);
+    if (error != MEMCACHED_SSL_CTX_SUCCESS) {
+        php_error_docref(NULL, E_ERROR, "Failed to create/set TLS context: %s", memcached_ssl_context_get_error(error));
+        RETURN_FALSE;
+    }
+
+	RETURN_TRUE;
+#else
+    php_error_docref(NULL, E_ERROR, "NOT SUPPORTED: build the client library with TLS enabled in order to use TLS methods.");
+    RETURN_FALSE;
+#endif /* HAVE_MEMCACHED_TLS */
+}
+/* }}} */
+
+
 
 #ifdef HAVE_MEMCACHED_SET_ENCODING_KEY
 /* {{{ Memcached::setEncodingKey(string key)
@@ -3767,6 +3925,12 @@ zend_class_entry *php_memc_get_exception(void)
 }
 
 PHP_MEMCACHED_API
+zend_class_entry *php_memc_get_tls_context_config(void)
+{
+	return memcached_tls_context_config_ce;
+}
+
+PHP_MEMCACHED_API
 zend_class_entry *php_memc_get_exception_base(int root)
 {
 #ifdef HAVE_SPL
@@ -4124,6 +4288,10 @@ ZEND_BEGIN_ARG_INFO(arginfo_setSaslAuthData, 0)
 ZEND_END_ARG_INFO()
 #endif
 
+ZEND_BEGIN_ARG_INFO(arginfo_createAndSetTLSContext, 0)
+	ZEND_ARG_INFO(0, context_config)
+ZEND_END_ARG_INFO()
+
 #ifdef HAVE_MEMCACHED_SET_ENCODING_KEY
 ZEND_BEGIN_ARG_INFO(arginfo_setEncodingKey, 0)
 	ZEND_ARG_INFO(0, key)
@@ -4230,6 +4398,7 @@ static zend_function_entry memcached_class_methods[] = {
 #ifdef HAVE_MEMCACHED_SASL
 	MEMC_ME(setSaslAuthData,    arginfo_setSaslAuthData)
 #endif
+	MEMC_ME(createAndSetTLSContext,    arginfo_createAndSetTLSContext)
 #ifdef HAVE_MEMCACHED_SET_ENCODING_KEY
 	MEMC_ME(setEncodingKey,     arginfo_setEncodingKey)
 #endif
@@ -4285,6 +4454,21 @@ PHP_GINIT_FUNCTION(php_memcached)
 	php_memcached_globals->session.lock_retries = 200;
 	php_memcached_globals->session.lock_expiration = 30;
 	php_memcached_globals->session.binary_protocol_enabled = 1;
+#ifdef HAVE_MEMCACHED_TLS
+	php_memcached_globals->session.tls_enabled = 0;
+	php_memcached_globals->session.tls_cert_file = NULL;
+	php_memcached_globals->session.tls_key_file = NULL;
+	php_memcached_globals->session.tls_key_file_pass = NULL;
+	php_memcached_globals->session.tls_ca_cert_file = NULL;
+	php_memcached_globals->session.tls_ca_cert_dir = NULL;
+	php_memcached_globals->session.tls_hostname = NULL;
+	php_memcached_globals->session.tls_protocol = NULL;
+	php_memcached_globals->session.tls_ciphers = NULL;
+	php_memcached_globals->session.tls_ciphersuites = NULL;
+	php_memcached_globals->session.tls_prefer_server_ciphers = 0;
+	php_memcached_globals->session.tls_skip_cert_verify = 0;
+	php_memcached_globals->session.tls_skip_hostname_verify = 0;
+#endif
 	php_memcached_globals->session.consistent_hash_enabled = 1;
 	php_memcached_globals->session.consistent_hash_type = MEMCACHED_BEHAVIOR_KETAMA;
 	php_memcached_globals->session.consistent_hash_name = NULL;
@@ -4313,6 +4497,9 @@ PHP_GINIT_FUNCTION(php_memcached)
 	/* Defaults for certain options */
 	php_memcached_globals->memc.default_behavior.consistent_hash_enabled = 0;
 	php_memcached_globals->memc.default_behavior.binary_protocol_enabled = 0;
+#ifdef HAVE_MEMCACHED_TLS
+	php_memcached_globals->memc.default_behavior.tls_enabled = 0;
+#endif
 	php_memcached_globals->memc.default_behavior.connect_timeout         = 0;
 }
 
@@ -4404,6 +4591,12 @@ static void php_memc_register_constants(INIT_FUNC_ARGS)
 	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_SASL, 0);
 #endif
 
+#ifdef HAVE_MEMCACHED_TLS
+	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_TLS, 1);
+#else
+	REGISTER_MEMC_CLASS_CONST_BOOL(HAVE_TLS, 0);
+#endif
+
 	/*
 	 * libmemcached behavior options
 	 */
@@ -4455,6 +4648,7 @@ static void php_memc_register_constants(INIT_FUNC_ARGS)
 #if defined(LIBMEMCACHED_VERSION_HEX) && LIBMEMCACHED_VERSION_HEX >= 0x01000018
 	REGISTER_MEMC_CLASS_CONST_LONG(OPT_SERVER_TIMEOUT_LIMIT, MEMCACHED_BEHAVIOR_SERVER_TIMEOUT_LIMIT);
 #endif
+	REGISTER_MEMC_CLASS_CONST_LONG(OPT_USE_TLS, MEMCACHED_BEHAVIOR_USE_TLS);
 
 	/*
 	 * libmemcached result codes
@@ -4620,6 +4814,9 @@ PHP_MINIT_FUNCTION(memcached)
 	/* TODO
 	 * possibly declare custom exception property here
 	 */
+
+    INIT_CLASS_ENTRY(ce, "MemcachedTLSContextConfig", NULL);
+	memcached_tls_context_config_ce = zend_register_internal_class(&ce);
 
 	php_memc_register_constants(INIT_FUNC_ARGS_PASSTHRU);
 	REGISTER_INI_ENTRIES();

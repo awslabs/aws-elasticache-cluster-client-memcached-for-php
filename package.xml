@@ -119,6 +119,7 @@ Fixes
     <file role='test' name='session_basic2.phpt'/>
     <file role='test' name='session_basic3.phpt'/>
     <file role='test' name='session_persistent.phpt'/>
+    <file role='test' name='session_tls.phpt'/>
     <file role='test' name='set_large.phpt'/>
     <file role='test' name='setoptions.phpt'/>
     <file role='test' name='touch_binary.phpt'/>
@@ -167,6 +168,7 @@ Fixes
     <file role='test' name='default_behavior.phpt'/>
     <file role='test' name='reset_keyprefix.phpt'/>
     <file role='test' name='session_lock-php71.phpt'/>
+    <file role='test' name='tls_basic.phpt'/>
   </dir>
  </dir>
  </contents>
