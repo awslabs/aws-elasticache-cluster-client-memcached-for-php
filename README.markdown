@@ -76,7 +76,7 @@ Note: If you want to enable igbinary support, checkout, compile, and install the
 
 Note: you can statically link the libmemcached library into the PHP binary so it can be ported across various Linux platforms. To do that, run the following command before "make":
 
-> sed -i "s#-lmemcached#<libmemcached build directory>\/lib\/libmemcached.a -lcrypt -lpthread -lm -lstdc++ -lsasl2#" Makefile
+> sed -i "s#-lmemcached -lmemcachedutil#&lt;libmemcached build directory&gt;\/lib\/libmemcached.a &lt;libmemcached build directory&gt;\/lib\/libmemcachedutil.a -lcrypt -lpthread -lm -lstdc++ -lsasl2#" Makefile
 
 # Resources
 ---------
