@@ -1,5 +1,15 @@
 memcached extension changelog
 
+Version 3.2.0 (2022-06-13)
+--------------------------
+
+	* Support for PHP 8.0, 8.1
+
+Version 3.1.6 (2022-05-10)
+--------------------------
+
+	* Added TLS support (#39)
+
 Version 3.1.5 (2019-12-03)
 --------------------------
 
