@@ -54,7 +54,8 @@ jobs:
             --enable-memcached-sasl \
             --enable-memcached-json \
             --enable-memcached-msgpack \
-            --enable-memcached-igbinary
+            --enable-memcached-igbinary \
+            --disable-memcached-tls
           make
           sudo make install
       - name: Create test configuration
