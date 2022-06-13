@@ -8,7 +8,7 @@ ARG_ENABLE('memcached-json', 'whether to enable memcached json serializer suppor
 
 if (PHP_MEMCACHED == "yes") {
 
-  if (!CHECK_LIB("memcached.lib", "memcached", PHP_MEMCACHED)) { 
+  if (!CHECK_LIB("memcached.lib;libmemcached.lib", "memcached", PHP_MEMCACHED)) {
 	ERROR("memcached: library 'memcached' not found");
   }
   
@@ -36,7 +36,7 @@ if (PHP_MEMCACHED == "yes") {
 	  }
   }
   
-  EXTENSION("memcached", "php_memcached.c php_libmemcached_compat.c g_fmt.c"+memcached_extra_src);
+  EXTENSION("memcached", "php_memcached.c php_libmemcached_compat.c g_fmt.c"+memcached_extra_src, null, " /DHAVE_SSIZE_T");
   ADD_SOURCES(configure_module_dirname+"\\fastlz", "fastlz.c", "memcached");
   AC_DEFINE("HAVE_MEMCACHED", 1, "memcached support");
   AC_DEFINE("MEMCACHED_EXPORTS", 1)

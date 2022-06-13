@@ -59,6 +59,9 @@ Fixes
    <file role='src' name='config.w32'/>
    <file role='src' name='php_memcached.c'/>
    <file role='src' name='php_memcached.h'/>
+   <file role='src' name='php_memcached.stub.php'/>
+   <file role='src' name='php_memcached_arginfo.h'/>
+   <file role='src' name='php_memcached_legacy_arginfo.h'/>
    <file role='src' name='php_memcached_private.h'/>
    <file role='src' name='php_memcached_session.c'/>
    <file role='src' name='php_memcached_session.h'/>
@@ -84,6 +87,7 @@ Fixes
     <file role='test' name='cas_multi.phpt'/>
     <file role='test' name='check_if_persistent.phpt'/>
     <file role='test' name='check_if_pristine.phpt'/>
+    <file role='test' name='check_key.phpt'/>
     <file role='test' name='clone.phpt'/>
     <file role='test' name='compression_conditions.phpt'/>
     <file role='test' name='compression_types.phpt'/>
@@ -100,6 +104,7 @@ Fixes
     <file role='test' name='gh_21.phpt'/>
     <file role='test' name='gh_77.phpt'/>
     <file role='test' name='gh_90.phpt'/>
+    <file role='test' name='gh_500.phpt'/>
     <file role='test' name='invoke_callback.phpt'/>
     <file role='test' name='invoke_callback_2.phpt'/>
     <file role='test' name='invoke_callback_twice.phpt'/>
@@ -134,10 +139,13 @@ Fixes
     <file role='test' name='types_php_multi.phpt'/>
     <file role='test' name='undefined_set.phpt'/>
     <file role='test' name='vbucket.phpt'/>
+    <file role='test' name='vbucket_error_7.phpt'/>
+    <file role='test' name='vbucket_error_8.phpt'/>
     <file role='test' name='user-flags.phpt'/>
     <file role='test' name='gh_93.phpt'/>
     <file role='test' name='add.phpt'/>
     <file role='test' name='bad_construct.phpt'/>
+    <file role='test' name='bad_construct_8.phpt'/>
     <file role='test' name='append.phpt'/>
     <file role='test' name='prepend.phpt'/>
     <file role='test' name='replace.phpt'/>
@@ -167,8 +175,11 @@ Fixes
     <file role='test' name='stats_hang.phpt'/>
     <file role='test' name='default_behavior.phpt'/>
     <file role='test' name='reset_keyprefix.phpt'/>
-    <file role='test' name='session_lock-php71.phpt'/>
-    <file role='test' name='tls_basic.phpt'/>
+	<file role='test' name='session_lock-php71.phpt'/>
+	<file role='test' name='server.inc'/>
+	<file role='test' name='server.php'/>
+	<file role='test' name='memcachedserver.phpt'/>
+	<file role='test' name='memcachedserver6.phpt'/>
   </dir>
  </dir>
  </contents>
