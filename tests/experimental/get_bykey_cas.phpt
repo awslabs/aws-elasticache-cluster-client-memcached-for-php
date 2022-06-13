@@ -15,36 +15,35 @@ function the_callback(Memcached $memc, $key, &$value) {
 
 $m->set('foo', 1, 10);
 
-$cas = null;
+$cas = 0.0;
 var_dump($m->getByKey('foo', 'foo', null, $cas));
 var_dump($cas);
 echo $m->getResultMessage(), "\n";
 
-$cas = null;
+$cas = 0.0;
 var_dump($m->getByKey('', 'foo', null, $cas));
 var_dump($cas);
 echo $m->getResultMessage(), "\n";
 
 $m->set('bar', "asdf", 10);
 
-$cas = null;
+$cas = 0.0;
 var_dump($m->getByKey('foo', 'bar', null, $cas));
 var_dump($cas);
 echo $m->getResultMessage(), "\n";
 
 $m->delete('foo');
-$cas = null;
-var_dump($m->getByKey(' д foo jkh a s едц', 'foo', null, $cas));
+$cas = 0.0;
+var_dump($m->getByKey(' пїЅ foo jkh a s пїЅпїЅпїЅ', 'foo', null, $cas));
 var_dump($cas);
 echo $m->getResultMessage(), "\n";
 
-$cas = null;
-var_dump($m->getByKey(' д foo jkh a s едц', '', null, $cas));
-var_dump($cas);
+$cas = 0.0;
+var_dump($m->getByKey(' пїЅ foo jkh a s пїЅпїЅпїЅ', '', null, $cas));
 echo $m->getResultMessage(), "\n";
 
 $m->delete('foo');
-$cas = null;
+$cas = 0.0;
 var_dump($m->getByKey('foo', 'foo', 'the_callback', $cas));
 var_dump($cas);
 var_dump($m->getByKey('foo', 'foo'));
@@ -62,7 +61,6 @@ bool(false)
 float(0)
 NOT FOUND
 bool(false)
-NULL
 A BAD KEY WAS PROVIDED/CHARACTERS OUT OF RANGE
 called
 string(4) "1234"
