@@ -35,7 +35,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </lead>
  <date>2022-03-24</date>
  <version>
-  <release>3.2.1</release>
+  <release>3.2.0</release>
   <api>3.2.0</api>
  </version>
  <stability>
