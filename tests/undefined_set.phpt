@@ -10,30 +10,25 @@ $m = memc_get_instance ();
 $key = 'foobarbazDEADC0DE';
 $value = array('foo' => 'bar');
 
-$rv = $m->set($no_key, $value, 360);
+// silent to hide:
+// Warning: Undefined variable
+// Deprecated: Memcached::set(): Passing null to parameter (PHP 8.1)
+
+$rv = @$m->set($no_key, $value, 360);
 var_dump($rv);
 
 
-$rv = $m->set($key, $no_value, 360);
+$rv = @$m->set($key, $no_value, 360);
 var_dump($rv);
 
-$rv = $m->set($no_key, $no_value, 360);
+$rv = @$m->set($no_key, $no_value, 360);
 var_dump($rv);
 
-$rv = $m->set($key, $value, $no_time);
+$rv = @$m->set($key, $value, $no_time);
 var_dump($rv);
 ?>
 --EXPECTF--
-Notice: Undefined variable: no_key in %s
 bool(false)
-
-Notice: Undefined variable: no_value in %s
 bool(true)
-
-Notice: Undefined variable: no_key in %s
-
-Notice: Undefined variable: no_value in %s
 bool(false)
-
-Notice: Undefined variable: no_time in %s
 bool(true)
