@@ -25,7 +25,18 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libmemcached-dev memcached libsasl2-dev sasl2-bin zlib1g-dev
+          sudo apt-get install memcached libsasl2-dev sasl2-bin zlib1g-dev git libevent-dev gcc g++ make autoconf
+      - name: Build and install libmemcached
+        run: |
+          LIBMEMCACHED_PATH=/home/runner/libmemcached
+          mkdir $LIBMEMCACHED_PATH
+          git clone https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached.git
+          cd aws-elasticache-cluster-client-libmemcached
+          touch configure.ac aclocal.m4 configure Makefile.am Makefile.in
+          CFLAGS=-Wno-error CPPFLAGS=-Wno-error ./configure --prefix=${LIBMEMCACHED_PATH} --with-pic
+          sed -e s/-Werror//g -i ./Makefile
+          make
+          sudo make install
       - name: Start memcached daemons
         run: |
           export SASL_CONF_PATH="/tmp/sasl2"
@@ -50,12 +61,12 @@ jobs:
         run: |
           phpize
           ./configure \
+            --with-libmemcached-dir=/home/runner/libmemcached \
             --enable-memcached-protocol=no \
             --enable-memcached-sasl \
             --enable-memcached-json \
             --enable-memcached-msgpack \
-            --enable-memcached-igbinary \
-            --disable-memcached-tls
+            --enable-memcached-igbinary
           make
           sudo make install
       - name: Create test configuration
