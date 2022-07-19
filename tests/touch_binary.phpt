@@ -8,6 +8,7 @@ include dirname(__FILE__) . "/skipif.inc";
 // See https://github.com/php-memcached-dev/php-memcached/issues/310 for further explanation
 // The problem is fixed fully in libmemcached 1.0.18, so we'll focus tests on that version
 if (Memcached::LIBMEMCACHED_VERSION_HEX < 0x01000018) die ('skip too old libmemcached');
+if (PHP_VERSION_ID >= 80200) print "skip";
 ?>
 --FILE--
 <?php
