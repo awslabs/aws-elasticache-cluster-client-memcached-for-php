@@ -3023,43 +3023,43 @@ static PHP_METHOD(Memcached, getOption)
 /* }}} */
 
 #ifdef HAVE_MEMCACHED_TLS
-static zend_bool php_set_tls_context_configurations(memcached_ssl_context_config *config, const char *key, const void *value){
+static zend_bool php_set_tls_context_configurations(memcached_ssl_context_config *config, const char *key, void *value){
     zend_bool ok = 1;
     if (!strcmp(key, "cert_file")) {
-        config->cert_file = COPY_STR(value);
+        config->cert_file = value;
     }
     else if(!strcmp(key, "key_file")){
-        config->key_file = COPY_STR(value);
+        config->key_file = value;
     }
     else if(!strcmp(key, "key_file_pass")){
-        config->key_file_pass =  COPY_STR(value);
+        config->key_file_pass =  value;
     }
     else if(!strcmp(key, "ca_cert_file")){
-        config->ca_cert_file =  COPY_STR(value);
+        config->ca_cert_file =  value;
     }
     else if(!strcmp(key, "ca_cert_dir")){
-        config->ca_cert_dir =  COPY_STR(value);
+        config->ca_cert_dir =  value;
     }
     else if(!strcmp(key, "protocol")){
-        config->protocol =  COPY_STR(value);
+        config->protocol =  value;
     }
     else if(!strcmp(key, "hostname")){
-        config->hostname =  COPY_STR(value);
+        config->hostname =  value;
     }
     else if(!strcmp(key, "ciphers")){
-        config->ciphers =  COPY_STR(value);
+        config->ciphers =  value;
     }
     else if(!strcmp(key, "ciphersuites")){
-        config->ciphersuites =  COPY_STR(value);
+        config->ciphersuites =  value;
     }
     else if(!strcmp(key, "prefer_server_ciphers")){
-        config->prefer_server_ciphers = COPY_PTR_INT(value);
+        config->prefer_server_ciphers = value;
     }
     else if(!strcmp(key, "skip_cert_verify")){
-        config->skip_cert_verify = COPY_PTR_INT(value);
+        config->skip_cert_verify = value;
     }
     else if(!strcmp(key, "skip_hostname_verify")){
-        config->skip_hostname_verify = COPY_PTR_INT(value);
+        config->skip_hostname_verify = value;
     } else {
         php_error_docref(NULL, E_WARNING, "Got invalid TLS context configuration key: %s", key);
         ok = 0;
@@ -3460,7 +3460,7 @@ static PHP_METHOD(Memcached, createAndSetTLSContext)
                     if (ZSTR_LEN(str) == 0) {
                         value = NULL;
                     } else {
-                        value = COPY_STR(ZSTR_VAL(str));
+                        value = ZSTR_VAL(str);
                     }
                     break;
                 default:
