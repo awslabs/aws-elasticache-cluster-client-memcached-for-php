@@ -3034,77 +3034,77 @@ static char * zval_dup_string(zval *zvalue) {
 }
 
 static zend_bool php_set_tls_context_configurations(memcached_ssl_context_config *config, zend_string *zkey, zval *zvalue){
-    zend_bool ok = 1;
-    if (zend_string_equals_literal(zkey, "cert_file")) {
-        config->cert_file = zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "key_file")){
-        config->key_file = zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "key_file_pass")){
-        config->key_file_pass =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "ca_cert_file")){
-        config->ca_cert_file =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "ca_cert_dir")){
-        config->ca_cert_dir =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "protocol")){
-        config->protocol =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "hostname")){
-        config->hostname =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "ciphers")){
-        config->ciphers =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "ciphersuites")){
-        config->ciphersuites =  zval_dup_string(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "prefer_server_ciphers")){
-        config->prefer_server_ciphers = zend_is_true(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "skip_cert_verify")){
-        config->skip_cert_verify = zend_is_true(zvalue);
-    }
-    else if(zend_string_equals_literal(zkey, "skip_hostname_verify")){
-        config->skip_hostname_verify = zend_is_true(zvalue);
-    } else {
-        php_error_docref(NULL, E_WARNING, "Got invalid TLS context configuration key: %s", ZSTR_VAL(zkey));
-        ok = 0;
-    }
-    return ok;
+	zend_bool ok = 1;
+	if (zend_string_equals_literal(zkey, "cert_file")) {
+		config->cert_file = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "key_file")){
+		config->key_file = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "key_file_pass")){
+		config->key_file_pass = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "ca_cert_file")){
+		config->ca_cert_file = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "ca_cert_dir")){
+		config->ca_cert_dir = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "protocol")){
+		config->protocol = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "hostname")){
+		config->hostname = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "ciphers")){
+		config->ciphers = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "ciphersuites")){
+		config->ciphersuites = zval_dup_string(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "prefer_server_ciphers")){
+		config->prefer_server_ciphers = zend_is_true(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "skip_cert_verify")){
+		config->skip_cert_verify = zend_is_true(zvalue);
+	}
+	else if(zend_string_equals_literal(zkey, "skip_hostname_verify")){
+		config->skip_hostname_verify = zend_is_true(zvalue);
+	} else {
+		php_error_docref(NULL, E_WARNING, "Got invalid TLS context configuration key: %s", ZSTR_VAL(zkey));
+		ok = 0;
+	}
+	return ok;
 }
 
 static void php_free_tls_context_configurations(memcached_ssl_context_config *config) {
 	if (config->cert_file) {
 		efree(config->cert_file);
 	}
-    if (config->key_file) {
+	if (config->key_file) {
 		efree(config->key_file);
-    }
-    if (config->key_file_pass) {
+	}
+	if (config->key_file_pass) {
 		efree(config->key_file_pass);
-    }
-    if (config->ca_cert_file) {
+	}
+	if (config->ca_cert_file) {
 		efree(config->ca_cert_file);
-    }
-    if (config->ca_cert_dir) {
+	}
+	if (config->ca_cert_dir) {
 		efree(config->ca_cert_dir);
-    }
-    if (config->protocol) {
+	}
+	if (config->protocol) {
 		efree(config->protocol);
-    }
-    if (config->hostname) {
+	}
+	if (config->hostname) {
 		efree(config->hostname);
-    }
-    if (config->ciphers) {
+	}
+	if (config->ciphers) {
 		efree(config->ciphers);
-    }
-    if (config->ciphersuites) {
+	}
+	if (config->ciphersuites) {
 		efree(config->ciphersuites);
-    }
+	}
 }
 #endif
 
@@ -3474,33 +3474,33 @@ static PHP_METHOD(Memcached, createAndSetTLSContext)
 
 	MEMC_METHOD_FETCH_OBJECT;
 
-    // Iterate through each configuration key cast its value type and set it to
-    // the TLS context configurations object (config)
+	// Iterate through each configuration key cast its value type and set it to
+	// the TLS context configurations object (config)
 	ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(context_config), zkey, zvalue) {
 		if (zkey == NULL) {
 			php_error_docref(NULL, E_WARNING, "invalid TLS context configuration. Configuration keys must be strings");
 			RETURN_FALSE;
 		} else {
-            if (!php_set_tls_context_configurations(&config, zkey, zvalue)) {
+			if (!php_set_tls_context_configurations(&config, zkey, zvalue)) {
 				// Error in setting config, free context and return
 				php_free_tls_context_configurations(&config);
-                RETURN_FALSE;
-            }
+				RETURN_FALSE;
+			}
 		}
 	} ZEND_HASH_FOREACH_END();
 
-    // Create and set SSL context to the memcached client
-    error = memcached_create_and_set_ssl_context(intern->memc, &config);
+	// Create and set SSL context to the memcached client
+	error = memcached_create_and_set_ssl_context(intern->memc, &config);
 	php_free_tls_context_configurations(&config);
-    if (error != MEMCACHED_SSL_CTX_SUCCESS) {
-        php_error_docref(NULL, E_ERROR, "Failed to create/set TLS context: %s", memcached_ssl_context_get_error(error));
-        RETURN_FALSE;
-    }
+	if (error != MEMCACHED_SSL_CTX_SUCCESS) {
+		php_error_docref(NULL, E_ERROR, "Failed to create/set TLS context: %s", memcached_ssl_context_get_error(error));
+		RETURN_FALSE;
+	}
 
 	RETURN_TRUE;
 #else
-    php_error_docref(NULL, E_ERROR, "NOT SUPPORTED: build the client library with TLS enabled in order to use TLS methods.");
-    RETURN_FALSE;
+	php_error_docref(NULL, E_ERROR, "NOT SUPPORTED: build the client library with TLS enabled in order to use TLS methods.");
+	RETURN_FALSE;
 #endif /* HAVE_MEMCACHED_TLS */
 }
 /* }}} */
